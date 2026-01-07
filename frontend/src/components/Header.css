@@ -1,0 +1,63 @@
+.header {
+  width: 100%;
+  background-color: #0f172a;
+  color: #fff;
+  padding: 12px 0;
+}
+
+.header-container {
+  width: 90%;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  font-size: 22px;
+  font-weight: bold;
+  color: #38bdf8;
+  text-decoration: none;
+}
+
+.nav a {
+  margin: 0 12px;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.nav a:hover {
+  color: #38bdf8;
+}
+
+.auth {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.auth a {
+  color: #fff;
+  text-decoration: none;
+}
+
+.register {
+  background: #38bdf8;
+  padding: 6px 12px;
+  border-radius: 4px;
+  color: #000 !important;
+}
+
+button {
+  background: #ef4444;
+  border: none;
+  padding: 6px 12px;
+  color: white;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.username {
+  font-size: 14px;
+}
