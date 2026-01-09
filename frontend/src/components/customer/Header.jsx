@@ -1,11 +1,17 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useContext } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { AuthContext } from "../../context/AuthContext";
 import "../../user.css";
 
 const Header = () => {
-  // TEMP: baad me context / redux se aayega
-  const user = JSON.parse(localStorage.getItem("user"));
+  const { user, logout } = useContext(AuthContext);
+  const navigate = useNavigate();
   const isAdmin = user?.role === "admin";
+
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
 
   return (
     <header className="header">
@@ -21,7 +27,7 @@ const Header = () => {
           <Link to="/shop">Shop</Link>
           <Link to="/cart">Cart</Link>
 
-          {isAdmin && <Link to="/admin/dashboard">Admin</Link>}
+          {isAdmin && <Link to="/admin/dashboard">Admin Dashboard</Link>}
         </nav>
 
         {/* AUTH BUTTONS */}
@@ -29,15 +35,7 @@ const Header = () => {
           {user ? (
             <>
               <span className="username">Hi, {user.name}</span>
-              <button
-                onClick={() => {
-                  localStorage.removeItem("user");
-                  localStorage.removeItem("token");
-                  window.location.reload();
-                }}
-              >
-                Logout
-              </button>
+              <button onClick={handleLogout}>Logout</button>
             </>
           ) : (
             <Link to="/login">Login</Link>

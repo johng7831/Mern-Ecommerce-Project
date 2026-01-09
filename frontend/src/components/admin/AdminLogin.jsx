@@ -1,9 +1,9 @@
 import { useState, useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
-import "./Login.css";
+import "./AdminLogin.css";
 
-const Login = () => {
+const AdminLogin = () => {
   const navigate = useNavigate();
   const { login } = useContext(AuthContext);
 
@@ -32,16 +32,16 @@ const Login = () => {
         return;
       }
 
-      // Reject admin login - only allow user login
-      if (data.user.role === "admin") {
-        setError("Admin login not allowed here. Please use Admin Login page.");
+      // Check if user is admin
+      if (data.user.role !== "admin") {
+        setError("Access denied. Admin credentials required.");
         setLoading(false);
         return;
       }
 
       localStorage.setItem("token", data.token);
       login(data.user);
-      navigate("/user");
+      navigate("/admin/dashboard");
     } catch (err) {
       setError("Something went wrong. Please try again.");
       setLoading(false);
@@ -49,14 +49,14 @@ const Login = () => {
   };
 
   return (
-    <div className="login-container">
-      <div className="login-card">
-        <div className="login-header">
-          <h1>Welcome Back</h1>
-          <p>Sign in to your account to continue shopping</p>
+    <div className="admin-login-container">
+      <div className="admin-login-card">
+        <div className="admin-login-header">
+          <h1>Admin Login</h1>
+          <p>Enter your admin credentials to access the dashboard</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="login-form">
+        <form onSubmit={handleSubmit} className="admin-login-form">
           {error && <div className="error-message">{error}</div>}
 
           <div className="form-group">
@@ -64,7 +64,7 @@ const Login = () => {
             <input
               id="email"
               type="email"
-              placeholder="your@email.com"
+              placeholder="admin@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -85,14 +85,14 @@ const Login = () => {
             />
           </div>
 
-          <button type="submit" className="login-btn" disabled={loading}>
-            {loading ? "Signing in..." : "Sign In"}
+          <button type="submit" className="admin-login-btn" disabled={loading}>
+            {loading ? "Logging in..." : "Login as Admin"}
           </button>
         </form>
 
-        <div className="login-footer">
+        <div className="admin-login-footer">
           <p>
-            Don't have an account? <Link to="/register">Sign Up</Link>
+            Not an admin? <Link to="/login">User Login</Link>
           </p>
         </div>
       </div>
@@ -100,4 +100,5 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default AdminLogin;
+
