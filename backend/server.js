@@ -20,17 +20,17 @@ if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir);
 }
 
-// Serve static files from uploads folder
+// Serve images publicly
 app.use("/uploads", express.static(uploadsDir));
 
 // Routes
 app.use("/api", require("./routes/userRoutes"));
 app.use("/api/admin", require("./routes/adminRoutes"));
-app.use("/api", require("./routes/imageRoutes")); // <-- image upload routes
+app.use("/api", require("./routes/imageRoutes"));
 
-// Default Route (optional)
+// Default Route
 app.get("/", (req, res) => {
-  res.send("API is running...");
+  res.send("🚀 API is running...");
 });
 
 const PORT = process.env.PORT || 5000;

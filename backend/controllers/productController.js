@@ -1,15 +1,32 @@
 const Product = require("../models/Product");
 
+// ===============================
 // CREATE PRODUCT
+// ===============================
 exports.createProduct = async (req, res) => {
   try {
-    const images = req.files
-      ? req.files.map(file => `/uploads/${file.filename}`)
-      : [];
+    const {
+      name,
+      description,
+      price,
+      category,
+      brand,
+      stock,
+      images, // ✅ ARRAY OF IMAGE IDs
+      isFeatured,
+      isActive,
+    } = req.body;
 
     const product = await Product.create({
-      ...req.body,
-      images
+      name,
+      description,
+      price,
+      category,
+      brand,
+      stock,
+      images, // 🔥 SAVE IMAGE OBJECT IDS
+      isFeatured,
+      isActive,
     });
 
     res.status(201).json(product);
@@ -18,12 +35,15 @@ exports.createProduct = async (req, res) => {
   }
 };
 
+// ===============================
 // GET ALL PRODUCTS
+// ===============================
 exports.getProducts = async (req, res) => {
   try {
     const products = await Product.find()
       .populate("category", "name")
-      .populate("brand", "name");
+      .populate("brand", "name")
+      .populate("images"); // 🔥 IMPORTANT
 
     res.json(products);
   } catch (error) {
@@ -31,12 +51,15 @@ exports.getProducts = async (req, res) => {
   }
 };
 
+// ===============================
 // GET SINGLE PRODUCT
+// ===============================
 exports.getProductById = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id)
       .populate("category")
-      .populate("brand");
+      .populate("brand")
+      .populate("images"); // 🔥 IMPORTANT
 
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
@@ -48,14 +71,19 @@ exports.getProductById = async (req, res) => {
   }
 };
 
+// ===============================
 // UPDATE PRODUCT
+// ===============================
 exports.updateProduct = async (req, res) => {
   try {
     const product = await Product.findByIdAndUpdate(
       req.params.id,
       req.body,
       { new: true }
-    );
+    )
+      .populate("category")
+      .populate("brand")
+      .populate("images");
 
     res.json(product);
   } catch (error) {
@@ -63,7 +91,9 @@ exports.updateProduct = async (req, res) => {
   }
 };
 
+// ===============================
 // DELETE PRODUCT
+// ===============================
 exports.deleteProduct = async (req, res) => {
   try {
     await Product.findByIdAndDelete(req.params.id);

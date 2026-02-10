@@ -2,44 +2,70 @@ const express = require("express");
 const router = express.Router();
 const multer = require("multer");
 const path = require("path");
+const fs = require("fs");
 const Image = require("../models/Image");
 
-// Multer configuration for file uploads
+// Ensure uploads folder exists
+const uploadsDir = path.join(__dirname, "../uploads");
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
+// ============================
+// Multer Configuration
+// ============================
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "uploads/"); // folder to store images
+  destination: (req, file, cb) => {
+    cb(null, uploadsDir);
   },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, uniqueSuffix + path.extname(file.originalname));
-  }
+  filename: (req, file, cb) => {
+    const uniqueName = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(null, uniqueName + path.extname(file.originalname));
+  },
 });
 
-const upload = multer({ storage });
+const fileFilter = (req, file, cb) => {
+  const allowedTypes = /jpeg|jpg|png|webp/;
+  const ext = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+  const mime = allowedTypes.test(file.mimetype);
+
+  if (ext && mime) {
+    cb(null, true);
+  } else {
+    cb(new Error("Only image files are allowed"));
+  }
+};
+
+const upload = multer({ storage, fileFilter });
 
 // ============================
 // POST /api/upload
-// Upload a single image
+// Upload single image & return URL
 // ============================
 router.post("/upload", upload.single("image"), async (req, res) => {
   try {
-    if (!req.file) return res.status(400).json({ error: "No file uploaded" });
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
 
-    const newImage = new Image({
+    const imagePath = req.file.path.replace(/\\/g, "/"); // normalize path for Windows
+
+    const image = await Image.create({
       filename: req.file.filename,
-      path: req.file.path,
+      path: imagePath,
     });
 
-    const savedImage = await newImage.save();
+    const imageUrl = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
 
-    res.json({
-      id: savedImage._id,
-      filename: savedImage.filename,
-      path: savedImage.path
+    res.status(201).json({
+      id: image._id,
+      filename: image.filename,
+      path: image.path,
+      url: imageUrl, // ✅ full public URL for frontend
     });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Failed to upload image" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: error.message });
   }
 });
 
@@ -50,13 +76,16 @@ router.post("/upload", upload.single("image"), async (req, res) => {
 router.get("/image/:id", async (req, res) => {
   try {
     const image = await Image.findById(req.params.id);
-    if (!image) return res.status(404).json({ error: "Image not found" });
+
+    if (!image) {
+      return res.status(404).json({ message: "Image not found" });
+    }
 
     // Send image file
     res.sendFile(path.resolve(image.path));
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Failed to fetch image" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: error.message });
   }
 });
 
