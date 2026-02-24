@@ -87,10 +87,13 @@ const ProductShow = ({ onAdd, onEdit }) => {
 
             <tbody>
               {products.map((product) => {
-                const imageUrl =
-                  product.images?.length > 0
-                    ? `${API_URL.replace("/api", "")}/${product.images[0].path}`
-                    : "https://via.placeholder.com/60x60?text=No+Image";
+              const firstImage = product.images && product.images.length > 0 ? product.images[0] : null;
+
+              // Prefer backend-provided public URL; fall back to /uploads/filename if needed
+              const imageUrl = firstImage
+                ? firstImage.url ||
+                  `${API_URL.replace("/api", "")}/uploads/${firstImage.filename}`
+                : "https://via.placeholder.com/60x60?text=No+Image";
 
                 return (
                   <tr key={product._id}>

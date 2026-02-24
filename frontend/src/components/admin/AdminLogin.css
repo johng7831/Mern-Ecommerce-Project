@@ -117,6 +117,26 @@
   color: #1e293b;
 }
 
+.form-group select {
+  padding: 0.9rem 1.25rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  background: #f8fafc;
+  color: #1e293b;
+  outline: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, #94a3b8 50%),
+    linear-gradient(135deg, #94a3b8 50%, transparent 50%);
+  background-position: calc(100% - 20px) calc(50% - 3px),
+    calc(100% - 15px) calc(50% - 3px);
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
+}
+
 .form-group input::placeholder {
   color: #94a3b8;
 }
@@ -124,6 +144,13 @@
 .form-group input:focus {
   border-color: #667eea;
   background: white;
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1), 0 4px 12px rgba(102, 126, 234, 0.15);
+  transform: translateY(-1px);
+}
+
+.form-group select:focus {
+  border-color: #667eea;
+  background: #ffffff;
   box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1), 0 4px 12px rgba(102, 126, 234, 0.15);
   transform: translateY(-1px);
 }
@@ -266,6 +293,52 @@
   background-color: var(--bg-color);
   min-height: 100vh;
   font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+.admin-card {
+  background-color: var(--card-bg);
+  border-radius: 16px;
+  padding: 24px 28px;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.18);
+  border: 1px solid var(--border-color);
+  max-width: 780px;
+  margin: 0 auto 2rem auto;
+}
+
+.admin-card h2 {
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.btn-secondary {
+  background-color: #ffffff;
+  color: var(--text-dark);
+  border: 1px solid var(--border-color);
+  padding: 0.7rem 1.5rem;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+  background-color: #e5e7eb;
+}
+
+.form-actions .btn-primary,
+.form-actions .btn-secondary {
+  min-width: 150px;
 }
 
 /* Header Styling */
@@ -426,4 +499,74 @@
 .btn-delete-outline:hover {
   background: #ff4d4f;
   color: white;
+}
+
+/* Image upload / preview styling for product forms */
+.image-preview {
+  margin-top: 0.75rem;
+  padding: 0.75rem;
+  border-radius: 10px;
+  border: 1px dashed var(--border-color);
+  background: #f8fafc;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  min-height: 72px;
+}
+
+.image-preview-item {
+  position: relative;
+  display: inline-flex;
+}
+
+.image-preview::before {
+  content: "Uploaded images";
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  color: var(--text-light);
+  margin-right: 0.5rem;
+}
+
+.image-preview img {
+  width: 64px;
+  height: 64px;
+  border-radius: 8px;
+  object-fit: cover;
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.18);
+  border: 1px solid rgba(148, 163, 184, 0.5);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.image-preview img:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.25);
+}
+
+.image-remove-btn {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  border: none;
+  background: rgba(239, 68, 68, 0.95);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 14px rgba(239, 68, 68, 0.45);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.image-remove-btn:hover {
+  background: #b91c1c;
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: 0 8px 18px rgba(185, 28, 28, 0.6);
 }

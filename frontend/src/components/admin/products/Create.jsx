@@ -63,6 +63,10 @@ const ProductCreate = ({ onBack }) => {
     }
   };
 
+  const handleRemoveImage = (indexToRemove) => {
+    setImages((prev) => prev.filter((_, index) => index !== indexToRemove));
+  };
+
   const handleCreate = async () => {
     if (!name || !price || !selectedCategory) {
       alert("Name, price, and category are required");
@@ -143,9 +147,22 @@ const ProductCreate = ({ onBack }) => {
       <div className="form-group">
         <label>Images</label>
         <input type="file" multiple onChange={handleImageUpload} />
-        <div className="image-preview" style={{ display: "flex", marginTop: 5 }}>
-          {images.map((img) => (
-            <img key={img.id} src={img.url} alt="preview" style={{ width: 60, height: 60, marginRight: 5, objectFit: "cover" }} />
+        <div className="image-preview">
+          {images.map((img, index) => (
+            <div key={img.id} className="image-preview-item">
+              <img
+                src={img.url}
+                alt="preview"
+                style={{ width: 60, height: 60, marginRight: 5, objectFit: "cover" }}
+              />
+              <button
+                type="button"
+                className="image-remove-btn"
+                onClick={() => handleRemoveImage(index)}
+              >
+                ×
+              </button>
+            </div>
           ))}
         </div>
       </div>

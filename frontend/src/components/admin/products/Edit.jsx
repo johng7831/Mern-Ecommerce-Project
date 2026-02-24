@@ -9,8 +9,20 @@ const ProductEdit = ({ product, onBack }) => {
   const [brands, setBrands] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(product?.category?._id || "");
   const [selectedBrand, setSelectedBrand] = useState(product?.brand?._id || "");
+  // IDs to send to backend
   const [images, setImages] = useState(product?.images?.map((img) => img._id) || []);
+  // URLs to show as preview
+  const [imagePreviews, setImagePreviews] = useState(
+    product?.images?.map((img) =>
+      img.url || `${API_URL.replace("/api", "")}/uploads/${img.filename}`
+    ) || []
+  );
   const [loading, setLoading] = useState(false);
+
+  const handleRemoveImage = (indexToRemove) => {
+    setImages((prev) => prev.filter((_, index) => index !== indexToRemove));
+    setImagePreviews((prev) => prev.filter((_, index) => index !== indexToRemove));
+  };
 
   // Fetch categories and brands
   useEffect(() => {
@@ -54,7 +66,13 @@ const ProductEdit = ({ product, onBack }) => {
           body: formData,
         });
         const data = await res.json();
+        // store ID for backend
         setImages((prev) => [...prev, data.id]);
+        // store URL for preview
+        setImagePreviews((prev) => [
+          ...prev,
+          data.url || `${API_URL.replace("/api", "")}/uploads/${data.filename}`,
+        ]);
       } catch (err) {
         console.error("Error uploading image", err);
         alert("Image upload failed");
@@ -143,13 +161,21 @@ const ProductEdit = ({ product, onBack }) => {
         <label>Images</label>
         <input type="file" multiple onChange={handleImageUpload} />
         <div className="image-preview">
-          {images.map((id) => (
-            <img
-              key={id}
-              src={`${API_URL.replace("/api", "")}/uploads/${id}`}
-              alt="preview"
-              style={{ width: 60, height: 60, marginRight: 5 }}
-            />
+          {imagePreviews.map((url, index) => (
+            <div key={index} className="image-preview-item">
+              <img
+                src={url}
+                alt="preview"
+                style={{ width: 60, height: 60, marginRight: 5 }}
+              />
+              <button
+                type="button"
+                className="image-remove-btn"
+                onClick={() => handleRemoveImage(index)}
+              >
+                ×
+              </button>
+            </div>
           ))}
         </div>
       </div>

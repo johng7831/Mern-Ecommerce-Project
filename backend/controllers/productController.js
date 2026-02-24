@@ -29,7 +29,14 @@ exports.createProduct = async (req, res) => {
       isActive,
     });
 
-    res.status(201).json(product);
+    // populate related refs (including images with URL) before returning
+    const populatedProduct = await product.populate([
+      { path: "category", select: "name" },
+      { path: "brand", select: "name" },
+      { path: "images" },
+    ]);
+
+    res.status(201).json(populatedProduct);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

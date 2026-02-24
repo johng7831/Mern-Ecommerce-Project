@@ -9,6 +9,10 @@ const imageSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  url: {
+    type: String, // public URL like http://localhost:5000/uploads/xxx.png
+    required: true,
+  },
   createdAt: {
     type: Date,
     default: Date.now,

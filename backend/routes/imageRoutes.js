@@ -49,19 +49,19 @@ router.post("/upload", upload.single("image"), async (req, res) => {
     }
 
     const imagePath = req.file.path.replace(/\\/g, "/"); // normalize path for Windows
+    const imageUrl = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
 
     const image = await Image.create({
       filename: req.file.filename,
       path: imagePath,
+      url: imageUrl,
     });
-
-    const imageUrl = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
 
     res.status(201).json({
       id: image._id,
       filename: image.filename,
       path: image.path,
-      url: imageUrl, // ✅ full public URL for frontend
+      url: image.url, // full public URL for frontend
     });
   } catch (error) {
     console.error(error);
