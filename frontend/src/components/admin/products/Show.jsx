@@ -81,6 +81,7 @@ const ProductShow = ({ onAdd, onEdit }) => {
                 <th>Brand</th>
                 <th>Price</th>
                 <th>Stock</th>
+                <th>Product Type</th>
                 <th className="text-right">Actions</th>
               </tr>
             </thead>
@@ -142,6 +143,38 @@ const ProductShow = ({ onAdd, onEdit }) => {
                       >
                         {product.stock} Units
                       </span>
+                    </td>
+
+                    {/* PRODUCT TYPE */}
+                    <td>
+                      {(() => {
+                        // Fallback for older products: if no productType but isFeatured is true
+                        const type =
+                          product.productType ||
+                          (product.isFeatured ? "featured" : "normal");
+
+                        if (type === "featured") {
+                          return (
+                            <span className="badge badge-type badge-featured">
+                              Featured
+                            </span>
+                          );
+                        }
+
+                        if (type === "new") {
+                          return (
+                            <span className="badge badge-type badge-new">
+                              New Arrival Product
+                            </span>
+                          );
+                        }
+
+                        return (
+                          <span className="badge badge-type badge-normal">
+                            Featurd Product
+                          </span>
+                        );
+                      })()}
                     </td>
 
                     {/* ACTIONS */}

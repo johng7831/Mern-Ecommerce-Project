@@ -21,6 +21,8 @@ const {
   getProductById,
   updateProduct,
   deleteProduct,
+  getFeaturedProducts,       
+  getNewArrivalProducts,   
 } = require("../controllers/productController");
 
 const router = express.Router();
@@ -48,5 +50,12 @@ router.put("/product/:id", protect, adminOnly, updateProduct);
 router.delete("/product/:id", protect, adminOnly, deleteProduct);
 router.get("/products", protect, adminOnly, getProducts);
 router.get("/product/:id", protect, adminOnly, getProductById);
+
+
+// 🔹 Public Product Routes (Frontend)
+router.get("/featured-products", getFeaturedProducts);
+router.get("/new-arrivals", getNewArrivalProducts);
+
+
 
 module.exports = router;

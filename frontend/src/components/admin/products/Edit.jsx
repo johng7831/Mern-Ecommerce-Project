@@ -23,6 +23,11 @@ const ProductEdit = ({ product, onBack }) => {
     setImages((prev) => prev.filter((_, index) => index !== indexToRemove));
     setImagePreviews((prev) => prev.filter((_, index) => index !== indexToRemove));
   };
+  const [productType, setProductType] = useState(
+    product?.productType || (product?.isFeatured ? "featured" : "normal")
+  );
+
+
 
   // Fetch categories and brands
   useEffect(() => {
@@ -103,6 +108,9 @@ const ProductEdit = ({ product, onBack }) => {
           category: selectedCategory,
           brand: selectedBrand,
           images,
+          productType,
+          isFeatured: productType === "featured",
+          isActive: true,
         }),
       });
 
@@ -156,7 +164,16 @@ const ProductEdit = ({ product, onBack }) => {
           ))}
         </select>
       </div>
-
+      <div className="form-group">
+        <label>Product Type</label>
+        <select
+          value={productType}
+          onChange={(e) => setProductType(e.target.value)}
+        >
+          <option value="featured">Featured Product</option>
+          <option value="new">New Arrival Product</option>
+        </select>
+      </div>
       <div className="form-group">
         <label>Images</label>
         <input type="file" multiple onChange={handleImageUpload} />

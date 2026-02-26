@@ -1,6 +1,8 @@
 import React, { useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { FaShoppingCart, FaSignInAlt } from "react-icons/fa";
 import { AuthContext } from "../../context/AuthContext";
+import { FaRegUser } from "react-icons/fa";
 import "../../user.css";
 
 const Header = () => {
@@ -16,6 +18,7 @@ const Header = () => {
   return (
     <header className="header">
       <div className="header-container">
+        
         {/* LOGO */}
         <Link to="/" className="logo">
           ShopEasy
@@ -25,8 +28,6 @@ const Header = () => {
         <nav className="nav">
           <Link to="/">Home</Link>
           <Link to="/shop">Shop</Link>
-          <Link to="/cart">Cart</Link>
-
           {isAdmin && <Link to="/admin/dashboard">Admin Dashboard</Link>}
         </nav>
 
@@ -35,16 +36,25 @@ const Header = () => {
           {user ? (
             <>
               <span className="username">Hi, {user.name}</span>
-              <button onClick={handleLogout}>Logout</button>
+              <button onClick={handleLogout} className="logout-btn">
+                Logout
+              </button>
             </>
           ) : (
-            <Link to="/login">Login</Link>
+            <>
+              <Link to="/login" className="login-link">
+                 <FaRegUser className="nav-icon" />
+              </Link>
+               <Link to="/cart" className="cart-link">
+                <FaShoppingCart className="nav-icon" />
+              </Link>
+            </>
           )}
         </div>
+
       </div>
     </header>
   );
 };
 
 export default Header;
-

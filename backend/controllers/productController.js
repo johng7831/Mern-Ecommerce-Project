@@ -12,7 +12,8 @@ exports.createProduct = async (req, res) => {
       category,
       brand,
       stock,
-      images, // ✅ ARRAY OF IMAGE IDs
+      images,
+      productType,
       isFeatured,
       isActive,
     } = req.body;
@@ -24,21 +25,28 @@ exports.createProduct = async (req, res) => {
       category,
       brand,
       stock,
-      images, // 🔥 SAVE IMAGE OBJECT IDS
+      images,
+      productType,
       isFeatured,
       isActive,
     });
 
-    // populate related refs (including images with URL) before returning
     const populatedProduct = await product.populate([
       { path: "category", select: "name" },
       { path: "brand", select: "name" },
-      { path: "images" },
+      { path: "images", select: "url" },
     ]);
 
-    res.status(201).json(populatedProduct);
+    res.status(201).json({
+      success: true,
+      data: populatedProduct,
+    });
+
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
 };
 
@@ -50,11 +58,20 @@ exports.getProducts = async (req, res) => {
     const products = await Product.find()
       .populate("category", "name")
       .populate("brand", "name")
-      .populate("images"); // 🔥 IMPORTANT
+      .populate("images", "url")
+      .sort({ createdAt: -1 });
 
-    res.json(products);
+    res.status(200).json({
+      success: true,
+      count: products.length,
+      data: products,
+    });
+
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
 };
 
@@ -64,17 +81,27 @@ exports.getProducts = async (req, res) => {
 exports.getProductById = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id)
-      .populate("category")
-      .populate("brand")
-      .populate("images"); // 🔥 IMPORTANT
+      .populate("category", "name")
+      .populate("brand", "name")
+      .populate("images", "url");
 
     if (!product) {
-      return res.status(404).json({ message: "Product not found" });
+      return res.status(404).json({
+        success: false,
+        message: "Product not found",
+      });
     }
 
-    res.json(product);
+    res.status(200).json({
+      success: true,
+      data: product,
+    });
+
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
 };
 
@@ -88,13 +115,20 @@ exports.updateProduct = async (req, res) => {
       req.body,
       { new: true }
     )
-      .populate("category")
-      .populate("brand")
-      .populate("images");
+      .populate("category", "name")
+      .populate("brand", "name")
+      .populate("images", "url");
 
-    res.json(product);
+    res.status(200).json({
+      success: true,
+      data: product,
+    });
+
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
 };
 
@@ -104,8 +138,73 @@ exports.updateProduct = async (req, res) => {
 exports.deleteProduct = async (req, res) => {
   try {
     await Product.findByIdAndDelete(req.params.id);
-    res.json({ message: "Product deleted successfully" });
+
+    res.status(200).json({
+      success: true,
+      message: "Product deleted successfully",
+    });
+
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// ===============================
+// GET FEATURED PRODUCTS (PUBLIC)
+// ===============================
+exports.getFeaturedProducts = async (req, res) => {
+  try {
+    const products = await Product.find({
+      $or: [{ productType: "featured" }, { isFeatured: true }],
+      isActive: { $ne: false },
+    })
+      .populate("category", "name")
+      .populate("brand", "name")
+      .populate("images", "url")
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      count: products.length,
+      data: products,
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// ===============================
+// GET NEW ARRIVAL PRODUCTS (PUBLIC)
+// ===============================
+exports.getNewArrivalProducts = async (req, res) => {
+  try {
+    const products = await Product.find({
+      productType: "new",
+      isActive: true,
+    })
+      .populate("category", "name")
+      .populate("brand", "name")
+      .populate("images", "url")
+      .sort({ createdAt: -1 })
+      .limit(8);
+
+    res.status(200).json({
+      success: true,
+      count: products.length,
+      data: products,
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
 };

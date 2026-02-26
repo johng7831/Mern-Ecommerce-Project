@@ -10,6 +10,10 @@ import UserDashboard from "./components/customer/UserDashboard";
 
 import { AuthProvider } from "./context/AuthContext";
 import { AdminRoute, UserRoute } from "./utils/ProtectedRoutes";
+import FeaturedProducts from "./components/customer/Featuredproduct";
+import NewArrivals from "./components/customer/NewArrivalproduct";
+import ProductDetails from "./components/customer/product";
+import Footer from "./components/customer/Footer";
 
 function App() {
   return (
@@ -18,7 +22,20 @@ function App() {
         <Header />
 
         <Routes>
-          <Route path="/" element={<ImageBanner />} />
+          {/* =============Home page sections =============*/}
+          <Route
+            path="/"
+            element={
+              <>
+                <ImageBanner />
+                <FeaturedProducts />
+                <NewArrivals />
+              </>
+            }
+          />
+          <Route path="/product/:id" element={<ProductDetails />} />
+
+          {/* =============Customer Login Register  Pages =============*/}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/admin" element={<AdminLogin />} />
@@ -31,7 +48,6 @@ function App() {
               </AdminRoute>
             }
           />
-
           <Route
             path="/user"
             element={
@@ -41,6 +57,7 @@ function App() {
             }
           />
         </Routes>
+        <Footer />
       </Router>
     </AuthProvider>
   );

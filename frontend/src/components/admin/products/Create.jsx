@@ -9,6 +9,7 @@ const ProductCreate = ({ onBack }) => {
   const [brands, setBrands] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedBrand, setSelectedBrand] = useState("");
+  const [productType, setProductType] = useState("normal");
   const [images, setImages] = useState([]); // will store {id, url}
   const [loading, setLoading] = useState(false);
 
@@ -90,6 +91,9 @@ const ProductCreate = ({ onBack }) => {
           category: selectedCategory,
           brand: selectedBrand,
           images: images.map((img) => img.id), // backend expects IDs
+          productType,
+          isFeatured: productType === "featured",
+          isActive: true,
         }),
       });
 
@@ -143,7 +147,16 @@ const ProductCreate = ({ onBack }) => {
           ))}
         </select>
       </div>
-
+      <div className="form-group">
+        <label>Product Type</label>
+        <select
+          value={productType}
+          onChange={(e) => setProductType(e.target.value)}
+        >
+          <option value="featured">Featured Product</option>
+          <option value="new">New Arrival Product</option>
+        </select>
+      </div>
       <div className="form-group">
         <label>Images</label>
         <input type="file" multiple onChange={handleImageUpload} />

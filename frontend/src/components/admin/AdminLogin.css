@@ -459,6 +459,29 @@
   color: var(--danger-text);
 }
 
+/* Product type badges */
+.badge-type {
+  border: 1px solid rgba(148, 163, 184, 0.5);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+}
+
+.badge-featured {
+  background: linear-gradient(135deg, #f97316, #ea580c);
+  color: #fff;
+  border: none;
+}
+
+.badge-new {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: #fff;
+  border: none;
+}
+
+.badge-normal {
+  background-color: #e5e7eb;
+  color: #4b5563;
+}
+
 /* Loading Spinner */
 .loading-container {
   display: flex;

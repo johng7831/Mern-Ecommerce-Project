@@ -1,0 +1,61 @@
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { Link } from "react-router-dom";
+import API_URL from "../../api";
+
+const FeaturedProducts = () => {
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    const fetchFeaturedProducts = async () => {
+      try {
+        const res = await axios.get(`${API_URL}/admin/featured-products`);
+        setProducts(res.data.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchFeaturedProducts();
+  }, []);
+
+  return (
+    <section className="home-section home-section--muted">
+      <div className="home-section-inner">
+        <div className="home-section-header">
+          <h2 className="home-section-title">Featured Products</h2>
+          <span className="home-section-subtitle">
+            Handpicked items just for you
+          </span>
+        </div>
+
+        <div className="product-grid">
+          {products.map((product) => (
+            <Link
+              key={product._id}
+              to={`/product/${product._id}`}
+              className="product-card-link"
+            >
+              <div className="product-card">
+                <div className="product-card-image-wrapper">
+                  <img
+                    src={product.images[0]?.url}
+                    alt={product.name}
+                    className="product-card-image"
+                  />
+                </div>
+                <div className="product-card-body">
+                  <h4 className="product-card-name">{product.name}</h4>
+                  <p className="product-card-brand">{product.brand?.name}</p>
+                  <p className="product-card-price">₹ {product.price}</p>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default FeaturedProducts;
