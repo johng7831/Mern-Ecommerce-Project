@@ -10,9 +10,16 @@ const FeaturedProducts = () => {
     const fetchFeaturedProducts = async () => {
       try {
         const res = await axios.get(`${API_URL}/admin/featured-products`);
-        setProducts(res.data.data);
+        const data = res.data;
+        const normalizedProducts = Array.isArray(data)
+          ? data
+          : Array.isArray(data?.data)
+          ? data.data
+          : [];
+        setProducts(normalizedProducts);
       } catch (error) {
         console.error(error);
+        setProducts([]);
       }
     };
 

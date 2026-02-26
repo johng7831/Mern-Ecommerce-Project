@@ -12,7 +12,15 @@ const ProductShow = ({ onAdd, onEdit }) => {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
-      setProducts(data);
+
+      // Normalize API response so products is always an array
+      const normalizedProducts = Array.isArray(data)
+        ? data
+        : Array.isArray(data?.data)
+        ? data.data
+        : [];
+
+      setProducts(normalizedProducts);
     } catch (error) {
       console.error("Error fetching products", error);
     } finally {
@@ -164,14 +172,14 @@ const ProductShow = ({ onAdd, onEdit }) => {
                         if (type === "new") {
                           return (
                             <span className="badge badge-type badge-new">
-                              New Arrival Product
+                              New Arrival
                             </span>
                           );
                         }
 
                         return (
                           <span className="badge badge-type badge-normal">
-                            Featurd Product
+                            Featurd 
                           </span>
                         );
                       })()}
