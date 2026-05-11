@@ -2,6 +2,7 @@ import { useState, useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import "./AdminLogin.css";
+import API_URL from "../../api";
 
 const AdminLogin = () => {
   const navigate = useNavigate();
@@ -18,17 +19,21 @@ const AdminLogin = () => {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:5000/api/login", {
+      const res = await fetch(`${API_URL}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
 
-      const data = await res.json();
+      let data = null;
+      try {
+        data = await res.json();
+      } catch {
+        // Backend may return non-JSON on unexpected failures.
+      }
 
       if (!res.ok) {
-        setError(data.message);
-        setLoading(false);
+        setError(data?.message || "Login failed");
         return;
       }
 
@@ -43,7 +48,8 @@ const AdminLogin = () => {
       login(data.user);
       navigate("/admin/dashboard");
     } catch (err) {
-      setError("Something went wrong. Please try again.");
+      setError(err.message || "Unable to connect to server. Please try again.");
+    } finally {
       setLoading(false);
     }
   };

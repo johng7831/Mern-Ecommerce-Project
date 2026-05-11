@@ -53,166 +53,103 @@ const ProductShow = ({ onAdd, onEdit }) => {
     fetchProducts();
   }, []);
 
-  if (loading) {
-    return (
-      <div className="loading-container">
-        <div className="spinner"></div>
-        <p>Fetching inventory...</p>
-      </div>
-    );
-  }
-
   return (
-    <div className="admin-container">
-      <header className="admin-header">
-        <div className="header-text">
-          <h1>Product Management</h1>
-          <p>View and manage your store inventory</p>
+    <>
+      <h2 className="greeting">Product Management</h2>
+      <div className="page-content-card">
+        <div className="card-header">
+          <h3>All Products</h3>
+          <button className="btn-primary" onClick={onAdd}>
+            + Add Product
+          </button>
         </div>
-        <button className="btn-add" onClick={onAdd}>
-          <span className="plus-icon">+</span> Add Product
-        </button>
-      </header>
 
-      <div className="table-wrapper">
-        {products.length === 0 ? (
-          <div className="empty-state">
-            <p>No products available. Click "Add Product" to get started.</p>
-          </div>
-        ) : (
-          <table className="custom-table">
-            <thead>
-              <tr>
-                <th>Image</th>
-                <th>Product</th>
-                <th>Category</th>
-                <th>Brand</th>
-                <th>Price</th>
-                <th>Stock</th>
-                <th>Product Type</th>
-                <th className="text-right">Actions</th>
-              </tr>
-            </thead>
+        <div className="table-container">
+          {loading ? (
+            <p style={{ textAlign: "center" }}>Loading products...</p>
+          ) : (
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>Image</th>
+                  <th>Product</th>
+                  <th>Category</th>
+                  <th>Brand</th>
+                  <th>Price</th>
+                  <th>Stock</th>
+                  <th>Type</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {products.length > 0 ? (
+                  products.map((product) => {
+                    const firstImage =
+                      product.images && product.images.length > 0
+                        ? product.images[0]
+                        : null;
+                    const imageUrl = firstImage
+                      ? firstImage.url ||
+                        `${API_URL.replace("/api", "")}/uploads/${firstImage.filename}`
+                      : "https://via.placeholder.com/60x60?text=No+Image";
 
-            <tbody>
-              {products.map((product) => {
-              const firstImage = product.images && product.images.length > 0 ? product.images[0] : null;
+                    const type =
+                      product.productType ||
+                      (product.isFeatured ? "featured" : "normal");
 
-              // Prefer backend-provided public URL; fall back to /uploads/filename if needed
-              const imageUrl = firstImage
-                ? firstImage.url ||
-                  `${API_URL.replace("/api", "")}/uploads/${firstImage.filename}`
-                : "https://via.placeholder.com/60x60?text=No+Image";
-
-                return (
-                  <tr key={product._id}>
-                    {/* IMAGE */}
-                    <td>
-                      <img
-                        src={imageUrl}
-                        alt={product.name}
-                        style={{
-                          width: "60px",
-                          height: "60px",
-                          objectFit: "cover",
-                          borderRadius: "6px",
-                        }}
-                      />
-                    </td>
-
-                    {/* NAME */}
-                    <td className="product-name-cell">{product.name}</td>
-
-                    {/* CATEGORY */}
-                    <td>
-                      {product.category?.name || (
-                        <span style={{ color: "#999" }}>—</span>
-                      )}
-                    </td>
-
-                    {/* BRAND */}
-                    <td>
-                      {product.brand?.name || (
-                        <span style={{ color: "#999" }}>—</span>
-                      )}
-                    </td>
-
-                    {/* PRICE */}
-                    <td className="price-cell">
-                      ₹{product.price.toLocaleString()}
-                    </td>
-
-                    {/* STOCK */}
-                    <td>
-                      <span
-                        className={`badge ${
-                          product.stock <= 5 ? "badge-low" : "badge-good"
-                        }`}
-                      >
-                        {product.stock} Units
-                      </span>
-                    </td>
-
-                    {/* PRODUCT TYPE */}
-                    <td>
-                      {(() => {
-                        // Fallback for older products: if no productType but isFeatured is true
-                        const type =
-                          product.productType ||
-                          (product.isFeatured ? "featured" : "normal");
-
-                        if (type === "featured") {
-                          return (
-                            <span className="badge badge-type badge-featured">
-                              Featured
-                            </span>
-                          );
-                        }
-
-                        if (type === "new") {
-                          return (
-                            <span className="badge badge-type badge-new">
-                              New Arrival
-                            </span>
-                          );
-                        }
-
-                        return (
-                          <span className="badge badge-type badge-normal">
-                            Featurd 
-                          </span>
-                        );
-                      })()}
-                    </td>
-
-                    {/* ACTIONS */}
-                    <td className="text-right">
-                      <button
-                        className="btn-edit-outline"
-                        onClick={() => onEdit(product)}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        className="btn-delete-outline"
-                        onClick={() => handleDelete(product._id)}
-                        style={{
-                          color: "red",
-                          marginLeft: "10px",
-                          cursor: "pointer",
-                        }}
-                      >
-                        Delete
-                      </button>
+                    return (
+                      <tr key={product._id}>
+                        <td>
+                          <img
+                            src={imageUrl}
+                            alt={product.name}
+                            style={{
+                              width: "56px",
+                              height: "56px",
+                              objectFit: "cover",
+                              borderRadius: "8px",
+                            }}
+                          />
+                        </td>
+                        <td>{product.name}</td>
+                        <td>{product.category?.name || "—"}</td>
+                        <td>{product.brand?.name || "—"}</td>
+                        <td>₹{Number(product.price || 0).toLocaleString()}</td>
+                        <td>{product.stock}</td>
+                        <td>
+                          {type === "featured"
+                            ? "Featured"
+                            : type === "new"
+                            ? "New Arrival"
+                            : "Normal"}
+                        </td>
+                        <td>
+                          <button className="btn-edit" onClick={() => onEdit(product)}>
+                            Edit
+                          </button>
+                          <button
+                            className="btn-delete"
+                            onClick={() => handleDelete(product._id)}
+                          >
+                            Delete
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })
+                ) : (
+                  <tr>
+                    <td colSpan="8" style={{ textAlign: "center" }}>
+                      No products available. Click "Add Product" to get started.
                     </td>
                   </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        )}
+                )}
+              </tbody>
+            </table>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

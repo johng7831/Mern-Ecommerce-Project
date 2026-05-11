@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import "../../user.css";
+import API_URL from "../../api";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -37,7 +38,7 @@ const Register = () => {
     try {
       setLoading(true);
 
-      const res = await fetch("http://localhost:5000/api/register", {
+      const res = await fetch(`${API_URL}/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -47,10 +48,15 @@ const Register = () => {
         }),
       });
 
-      const data = await res.json();
+      let data = null;
+      try {
+        data = await res.json();
+      } catch {
+        // Backend may return non-JSON on unexpected failures.
+      }
 
       if (!res.ok) {
-        throw new Error(data.message || "Registration failed");
+        throw new Error(data?.message || "Registration failed");
       }
 
       // Registration successful, redirect to login
