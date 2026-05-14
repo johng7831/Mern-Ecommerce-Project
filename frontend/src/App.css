@@ -275,3 +275,23 @@
     grid-template-columns: 1fr;
   }
 }
+.checkout-section {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.btn-checkout {
+  background-color: #000;
+  color: #fff;
+  padding: 12px 24px;
+  border-radius: 30px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: 0.3s ease;
+}
+
+.btn-checkout:hover {
+  background-color: #ff6600;
+  color: #fff;
+}

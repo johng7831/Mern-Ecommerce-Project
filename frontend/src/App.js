@@ -16,7 +16,7 @@ import ProductDetails from "./components/customer/product";
 import Cart from "./components/customer/Cart";
 import Footer from "./components/customer/Footer";
 import Shopproduct from "./components/customer/Shopproduct";
-
+import Checkout from "./components/customer/Checkout";
 
 function App() {
   return (
@@ -41,7 +41,7 @@ function App() {
           <Route path="/product/:id" element={<ProductDetails />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/shop-product" element={<Shopproduct />} />
-
+          <Route path="/checkout" element={<Checkout />} />
 
           {/* =============Customer Login Register  Pages =============*/}
           <Route path="/login" element={<Login />} />

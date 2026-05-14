@@ -105,6 +105,17 @@ const Cart = () => {
           Continue shopping
         </Link>
       </div>
+
+
+
+      <div className="cart-summary checkout-section">
+       <Link to="/checkout" className="btn-checkout">
+         Continue Checkout
+       </Link>
+      </div>
+
+
+
     </div>
   );
 };
