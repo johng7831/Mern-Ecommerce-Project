@@ -208,3 +208,27 @@ exports.getNewArrivalProducts = async (req, res) => {
     });
   }
 };
+
+// ===============================
+// GET SHOP CATALOG (PUBLIC)
+// ===============================
+exports.getShopProducts = async (req, res) => {
+  try {
+    const products = await Product.find({ isActive: { $ne: false } })
+      .populate("category", "name")
+      .populate("brand", "name")
+      .populate("images", "url")
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      count: products.length,
+      data: products,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};

@@ -13,7 +13,10 @@ import { AdminRoute, UserRoute } from "./utils/ProtectedRoutes";
 import FeaturedProducts from "./components/customer/Featuredproduct";
 import NewArrivals from "./components/customer/NewArrivalproduct";
 import ProductDetails from "./components/customer/product";
+import Cart from "./components/customer/Cart";
 import Footer from "./components/customer/Footer";
+import Shopproduct from "./components/customer/Shopproduct";
+
 
 function App() {
   return (
@@ -33,12 +36,19 @@ function App() {
               </>
             }
           />
+
+
           <Route path="/product/:id" element={<ProductDetails />} />
+          <Route path="/cart" element={<Cart />} />
+          <Route path="/shop-product" element={<Shopproduct />} />
+
 
           {/* =============Customer Login Register  Pages =============*/}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/admin" element={<AdminLogin />} />
+
+
 
           <Route
             path="/admin/dashboard"

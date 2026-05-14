@@ -106,7 +106,7 @@ const ProductEdit = ({ product, onBack }) => {
           price,
           stock,
           category: selectedCategory,
-          brand: selectedBrand,
+          brand: selectedBrand || null,
           images,
           productType,
           isFeatured: productType === "featured",

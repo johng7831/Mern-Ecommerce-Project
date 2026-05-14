@@ -1,12 +1,15 @@
 import React, { useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FaShoppingCart, FaSignInAlt } from "react-icons/fa";
-import { AuthContext } from "../../context/AuthContext";
+import { FaShoppingCart } from "react-icons/fa";
 import { FaRegUser } from "react-icons/fa";
+import { AuthContext } from "../../context/AuthContext";
+import { CartContext } from "../../context/CartContext";
 import "../../user.css";
 
 const Header = () => {
   const { user, logout } = useContext(AuthContext);
+  const { cartItems } = useContext(CartContext);
+  const cartCount = cartItems.reduce((n, item) => n + (item.quantity || 1), 0);
   const navigate = useNavigate();
   const isAdmin = user?.role === "admin";
 
@@ -18,18 +21,23 @@ const Header = () => {
   return (
     <header className="header">
       <div className="header-container">
-        
+
         {/* LOGO */}
         <Link to="/" className="logo">
           ShopEasy
         </Link>
 
         {/* NAV LINKS */}
-        <nav className="nav">
-          <Link to="/">Home</Link>
-          <Link to="/shop">Shop</Link>
-          {isAdmin && <Link to="/admin/dashboard">Admin Dashboard</Link>}
-        </nav>
+
+      <nav className="nav">
+        <Link to="/">Home</Link>
+        <Link to="/shop-product">Shop</Link>
+        {isAdmin && (
+          <Link to="/admin/dashboard">Admin Dashboard</Link>
+        )}
+      </nav>
+
+
 
         {/* AUTH BUTTONS */}
         <div className="auth">
@@ -41,15 +49,18 @@ const Header = () => {
               </button>
             </>
           ) : (
-            <>
-              <Link to="/login" className="login-link">
-                 <FaRegUser className="nav-icon" />
-              </Link>
-               <Link to="/cart" className="cart-link">
-                <FaShoppingCart className="nav-icon" />
-              </Link>
-            </>
+            <Link to="/login" className="login-link">
+              <FaRegUser className="nav-icon" />
+            </Link>
           )}
+
+          {/* Cart always visible */}
+          <Link to="/cart" className="cart-link">
+            <div className="cart-wrapper">
+              <FaShoppingCart className="nav-icon" />
+              <span className="cart-count">{cartCount}</span>
+            </div>
+          </Link>
         </div>
 
       </div>

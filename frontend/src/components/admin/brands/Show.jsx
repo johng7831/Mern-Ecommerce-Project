@@ -1,94 +1,95 @@
 import React, { useEffect, useState } from "react";
 
-// Make sure API_URL ends with a slash
-const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5001/api/";
+const API_URL = "http://localhost:5001/api";
 
 const BrandShow = ({ onAdd, onEdit }) => {
   const [brands, setBrands] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch all brands
+  // ================= FETCH BRANDS =================
   const fetchBrands = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      console.error("No token found. Please login first.");
-      setBrands([]);
-      setLoading(false);
-      return;
-    }
-
     try {
-      const res = await fetch(`${API_URL}admin/brands`, {
+      const token = localStorage.getItem("token");
+
+      const response = await fetch(`${API_URL}/admin/brands`, {
+        method: "GET",
         headers: {
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       });
 
-      if (!res.ok) {
-        const text = await res.text();
-        throw new Error(text || "Failed to fetch brands");
+      // Check response first
+      if (!response.ok) {
+        throw new Error("Failed to fetch brands");
       }
 
-      const data = await res.json();
-      console.log("API response:", data);
+      const data = await response.json();
 
-      // Adjust this if your backend wraps data
-      setBrands(data.data || data); 
+      console.log("Brands API Response:", data);
+
+      // Set brands
+      setBrands(Array.isArray(data) ? data : []);
     } catch (error) {
-      console.error("Error fetching brands:", error);
+      console.error("Fetch Brand Error:", error);
       setBrands([]);
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchBrands();
-  }, []);
-
-  // Delete a brand
+  // ================= DELETE BRAND =================
   const handleDelete = async (id) => {
-    if (!window.confirm("Delete this brand?")) return;
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this brand?"
+    );
 
-    const token = localStorage.getItem("token");
-    if (!token) {
-      alert("You must be logged in to delete a brand");
-      return;
-    }
+    if (!confirmDelete) return;
 
     try {
-      const res = await fetch(`${API_URL}admin/brand/${id}`, {
+      const token = localStorage.getItem("token");
+
+      const response = await fetch(`${API_URL}/admin/brand/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
-      if (!res.ok) {
-        const text = await res.text();
-        throw new Error(text || "Delete failed");
+      if (!response.ok) {
+        throw new Error("Delete failed");
       }
 
       alert("Brand deleted successfully");
-      fetchBrands(); // Refresh list
+
+      // Refresh list
+      fetchBrands();
     } catch (error) {
-      console.error("Delete error:", error);
+      console.error("Delete Error:", error);
       alert("Failed to delete brand");
     }
   };
 
+  // ================= USE EFFECT =================
+  useEffect(() => {
+    fetchBrands();
+  }, []);
+
   return (
-    <>
+    <div>
       <h2 className="greeting">Brand Management</h2>
 
       <div className="page-content-card">
+        {/* Header */}
         <div className="card-header">
           <h3>All Brands</h3>
+
           <button className="btn-primary" onClick={onAdd}>
             + Add Brand
           </button>
         </div>
 
+        {/* Table */}
         <div className="table-container">
           {loading ? (
             <p style={{ textAlign: "center" }}>Loading brands...</p>
@@ -100,11 +101,13 @@ const BrandShow = ({ onAdd, onEdit }) => {
                   <th>Actions</th>
                 </tr>
               </thead>
+
               <tbody>
                 {brands.length > 0 ? (
                   brands.map((brand) => (
                     <tr key={brand._id}>
                       <td>{brand.name}</td>
+
                       <td>
                         <button
                           className="btn-edit"
@@ -112,6 +115,7 @@ const BrandShow = ({ onAdd, onEdit }) => {
                         >
                           Edit
                         </button>
+
                         <button
                           className="btn-delete"
                           onClick={() => handleDelete(brand._id)}
@@ -133,7 +137,7 @@ const BrandShow = ({ onAdd, onEdit }) => {
           )}
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

@@ -89,7 +89,7 @@ const ProductCreate = ({ onBack }) => {
           price,
           stock,
           category: selectedCategory,
-          brand: selectedBrand,
+          ...(selectedBrand ? { brand: selectedBrand } : {}),
           images: images.map((img) => img.id), // backend expects IDs
           productType,
           isFeatured: productType === "featured",

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import API_URL from "../../api";
+import { displayBrandName } from "../../utils/productDisplay";
 
 const FeaturedProducts = () => {
   const [products, setProducts] = useState([]);
@@ -9,16 +10,21 @@ const FeaturedProducts = () => {
   useEffect(() => {
     const fetchFeaturedProducts = async () => {
       try {
-        const res = await axios.get(`${API_URL}/admin/featured-products`);
+        const res = await axios.get(
+          `${API_URL}/admin/featured-products`
+        );
+
         const data = res.data;
+
         const normalizedProducts = Array.isArray(data)
           ? data
           : Array.isArray(data?.data)
           ? data.data
           : [];
+
         setProducts(normalizedProducts);
       } catch (error) {
-        console.error(error);
+        console.error("Fetch Featured Products Error:", error);
         setProducts([]);
       }
     };
@@ -30,7 +36,10 @@ const FeaturedProducts = () => {
     <section className="home-section home-section--muted">
       <div className="home-section-inner">
         <div className="home-section-header">
-          <h2 className="home-section-title">Featured Products</h2>
+          <h2 className="home-section-title">
+            Featured Products
+          </h2>
+
           <span className="home-section-subtitle">
             Handpicked items just for you
           </span>
@@ -46,15 +55,25 @@ const FeaturedProducts = () => {
               <div className="product-card">
                 <div className="product-card-image-wrapper">
                   <img
-                    src={product.images[0]?.url}
+                    src={product.images?.[0]?.url}
                     alt={product.name}
                     className="product-card-image"
                   />
                 </div>
+
                 <div className="product-card-body">
-                  <h4 className="product-card-name">{product.name}</h4>
-                  <p className="product-card-brand">{product.brand?.name}</p>
-                  <p className="product-card-price">₹ {product.price}</p>
+                  <h4 className="product-card-name">
+                    {product.name}
+                  </h4>
+
+                  <p className="product-card-brand">
+                    {displayBrandName(product.brand) ||
+                      "No brand"}
+                  </p>
+
+                  <p className="product-card-price">
+                    ₹ {product.price}
+                  </p>
                 </div>
               </div>
             </Link>
