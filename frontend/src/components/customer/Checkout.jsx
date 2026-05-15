@@ -94,10 +94,6 @@ const Checkout = () => {
 
       console.log("ORDER DATA:", orderData);
 
-      // ✅ CORRECT API URL
-      // .env already has:
-      // REACT_APP_API_URL=http://localhost:5001/api
-
       const res = await axios.post(
         `${API_URL}/admin/order`,
         orderData,

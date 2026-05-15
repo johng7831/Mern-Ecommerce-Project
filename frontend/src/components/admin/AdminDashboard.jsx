@@ -15,6 +15,9 @@ import ProductShow from "./products/Show";
 import ProductEdit from "./products/Edit";
 import ProductCreate from "./products/Create";
 
+import Ordershow from "./Orders/Show";
+import OrderEdit from "./Orders/Edit";
+
 const AdminDashboard = () => {
   const [activePage, setActivePage] = useState("dashboard");
 
@@ -29,6 +32,11 @@ const AdminDashboard = () => {
   // Product state
   const [productView, setProductView] = useState("show");
   const [selectedProduct, setSelectedProduct] = useState(null);
+
+  // Order state
+  const [orderView, setOrderView] = useState("show");
+  const [selectedOrder, setSelectedOrder] = useState(null);
+
 
   // -------- CATEGORY RENDER --------
   const renderCategoryContent = () => {
@@ -120,6 +128,47 @@ const AdminDashboard = () => {
     }
   };
 
+
+  // -------- ORDER RENDER --------
+const renderOrderContent = () => {
+  switch (orderView) {
+    case "edit":
+      return (
+        <OrderEdit
+          order={selectedOrder}
+          onBack={() => {
+            setOrderView("show");
+            setSelectedOrder(null);
+          }}
+        />
+      );
+
+    default:
+      return (
+        <Ordershow
+          onEdit={(order) => {
+            setSelectedOrder(order);
+            setOrderView("edit");
+          }}
+        />
+      );
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   return (
     <div className="dashboard-container admin">
       {/* SIDEBAR */}
@@ -175,6 +224,22 @@ const AdminDashboard = () => {
               <span className="nav-icon">📦</span>
               <span className="nav-text">Products</span>
             </li>
+
+                {/* ✅ ORDERS ADDED */}
+           <li
+            className={`nav-item ${activePage === "orders" ? "active" : ""}`}
+            onClick={() => {
+              setActivePage("orders");
+              setOrderView("show");
+              setSelectedOrder(null);
+            }}
+          >
+            <span className="nav-icon">🧾</span>
+            <span className="nav-text">Orders</span>
+          </li>
+
+
+
           </ul>
         </nav>
       </aside>
@@ -199,6 +264,7 @@ const AdminDashboard = () => {
           {activePage === "categories" && renderCategoryContent()}
           {activePage === "brands" && renderBrandContent()}
           {activePage === "products" && renderProductContent()}
+           {activePage === "orders" && renderOrderContent()}
         </div>
       </main>
     </div>
