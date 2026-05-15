@@ -917,14 +917,28 @@ textarea.form-input {
 
 /* ==================== CART PAGE ==================== */
 .cart-page {
-  max-width: 900px;
   margin: 2.5rem auto 4rem;
   padding: 0 1.5rem;
+}
+
+.cart-page--filled {
+  max-width: 1040px;
+}
+
+.cart-page-inner {
+  width: 100%;
+}
+
+.cart-page-header {
+  margin-bottom: 1.5rem;
 }
 
 .cart-page--empty {
   text-align: center;
   padding-top: 3rem;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .cart-page-title {
@@ -937,7 +951,101 @@ textarea.form-input {
 .cart-page-meta {
   font-size: 0.9rem;
   color: #6b7280;
-  margin-bottom: 1.5rem;
+  margin-bottom: 0;
+}
+
+.cart-page--filled .cart-page-meta {
+  margin-bottom: 0;
+}
+
+.cart-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 340px);
+  gap: 2rem;
+  align-items: start;
+}
+
+.cart-main {
+  min-width: 0;
+}
+
+.cart-main-footer {
+  margin-top: 0.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.cart-aside {
+  position: sticky;
+  top: 5.5rem;
+}
+
+.cart-summary-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 24px rgba(15, 23, 42, 0.06);
+  border: 1px solid #e5e7eb;
+}
+
+.cart-summary-card-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 1rem;
+}
+
+.cart-summary-card-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.05rem;
+  margin-bottom: 0.75rem;
+}
+
+.cart-summary-card-row strong {
+  font-size: 1.2rem;
+  color: #111827;
+}
+
+.cart-summary-card-hint {
+  font-size: 0.8rem;
+  color: #9ca3af;
+  line-height: 1.45;
+  margin: 0 0 1.25rem;
+}
+
+.cart-checkout-btn {
+  display: block;
+  width: 100%;
+  text-align: center;
+  padding: 0.9rem 1rem;
+  text-decoration: none;
+  box-sizing: border-box;
+}
+
+.btn-checkout {
+  display: inline-block;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 999px;
+  padding: 0.85rem 1.5rem;
+  background: #ff6600;
+  color: #fff;
+  text-decoration: none;
+  text-align: center;
+  transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: 0 4px 16px rgba(255, 102, 0, 0.35);
+}
+
+.btn-checkout:hover {
+  background: #e65c00;
+  color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(255, 102, 0, 0.4);
 }
 
 .cart-page-empty-text {
@@ -952,8 +1060,21 @@ textarea.form-input {
 
 .cart-list {
   list-style: none;
-  padding: 0;
-  margin: 0 0 2rem;
+  margin: 0;
+  padding: 0 1.25rem;
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 4px 24px rgba(15, 23, 42, 0.04);
+}
+
+.cart-page--filled .cart-row:first-child {
+  padding-top: 1.25rem;
+}
+
+.cart-page--filled .cart-row:last-child {
+  border-bottom: none;
+  padding-bottom: 1.25rem;
 }
 
 .cart-row {
@@ -1072,17 +1193,15 @@ textarea.form-input {
   color: #991b1b;
 }
 
-.cart-summary {
-  border-top: 2px solid #e5e7eb;
-  padding-top: 1.25rem;
-}
+@media (max-width: 900px) {
+  .cart-layout {
+    grid-template-columns: 1fr;
+  }
 
-.cart-summary-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 1.1rem;
-  margin-bottom: 1.25rem;
+  .cart-aside {
+    position: static;
+    order: -1;
+  }
 }
 
 @media (max-width: 640px) {
@@ -1559,6 +1678,363 @@ textarea.form-input {
   .checkout-order-image-wrap {
     width: 64px;
     height: 64px;
+  }
+}
+
+/* ==================== THANK YOU PAGE ==================== */
+.thank-you-page {
+  padding: 0 1.5rem 4rem;
+  min-height: calc(100vh - 180px);
+  background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 45%, #f0f2f5 100%);
+}
+
+.thank-you-page-inner {
+  max-width: 960px;
+  margin: 2rem auto 0;
+  animation: thankYouFade 0.55s ease;
+}
+
+@keyframes thankYouFade {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.thank-you-hero {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.thank-you-icon-wrap {
+  width: 88px;
+  height: 88px;
+  margin: 0 auto 1.25rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #34d399 0%, #059669 100%);
+  box-shadow: 0 16px 40px rgba(5, 150, 105, 0.35);
+}
+
+.thank-you-icon {
+  font-size: 2.25rem;
+  color: #fff;
+}
+
+.thank-you-title {
+  font-size: clamp(1.6rem, 4vw, 2rem);
+  font-weight: 800;
+  color: #111827;
+  letter-spacing: -0.03em;
+  margin-bottom: 0.5rem;
+}
+
+.thank-you-lead {
+  max-width: 520px;
+  margin: 0 auto;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #4b5563;
+}
+
+.thank-you-meta {
+  margin-top: 1rem;
+  font-size: 0.88rem;
+  color: #6b7280;
+}
+
+.thank-you-meta-label {
+  font-weight: 600;
+  color: #374151;
+}
+
+.thank-you-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 380px);
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.thank-you-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 1.5rem 1.5rem 1.6rem;
+  box-shadow: 0 4px 24px rgba(15, 23, 42, 0.06);
+  border: 1px solid #e5e7eb;
+}
+
+.thank-you-card-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 1.15rem;
+}
+
+.thank-you-steps {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.thank-you-step {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.thank-you-step-icon {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+  color: #4f46e5;
+  font-size: 1.1rem;
+}
+
+.thank-you-step-title {
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 0.25rem;
+  font-size: 0.95rem;
+}
+
+.thank-you-step-text {
+  font-size: 0.86rem;
+  color: #6b7280;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.thank-you-empty {
+  font-size: 0.92rem;
+  color: #6b7280;
+  line-height: 1.55;
+  margin: 0 0 0.5rem;
+}
+
+.thank-you-ship {
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.thank-you-ship-name {
+  font-weight: 700;
+  color: #111827;
+  font-size: 1rem;
+  margin-bottom: 0.35rem;
+}
+
+.thank-you-ship-line,
+.thank-you-ship-meta {
+  font-size: 0.88rem;
+  color: #4b5563;
+  line-height: 1.45;
+  margin: 0.15rem 0;
+}
+
+.thank-you-ship-sep {
+  margin: 0 0.35rem;
+  color: #d1d5db;
+}
+
+.thank-you-pay-badge {
+  margin-top: 0.75rem;
+  font-size: 0.82rem;
+  color: #6b7280;
+}
+
+.thank-you-pay-badge strong {
+  color: #111827;
+}
+
+.thank-you-items {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 0.75rem;
+}
+
+.thank-you-item-row {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr) auto;
+  gap: 0.75rem;
+  align-items: start;
+  padding: 0.65rem 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.thank-you-item-row:last-child {
+  border-bottom: none;
+}
+
+.thank-you-item-thumb {
+  width: 52px;
+  height: 52px;
+  border-radius: 10px;
+  background: #f5f7fb;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  color: #9ca3af;
+  text-align: center;
+  padding: 0.2rem;
+}
+
+.thank-you-item-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.thank-you-item-name {
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: #111827;
+  margin: 0 0 0.15rem;
+}
+
+.thank-you-item-brand {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  margin: 0 0 0.2rem;
+  min-height: 0.9rem;
+}
+
+.thank-you-item-qty {
+  font-size: 0.78rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+.thank-you-item-line {
+  font-weight: 700;
+  color: #059669;
+  font-size: 0.9rem;
+  margin: 0;
+  white-space: nowrap;
+  align-self: center;
+}
+
+.thank-you-more {
+  font-size: 0.82rem;
+  color: #6b7280;
+  margin: 0 0 1rem;
+}
+
+.thank-you-totals {
+  margin: 0;
+}
+
+.thank-you-total-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.88rem;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.thank-you-total-row dt {
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.thank-you-total-row dd {
+  margin: 0;
+  font-weight: 600;
+  color: #111827;
+}
+
+.thank-you-grand {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 2px solid #e5e7eb;
+  font-size: 1rem;
+  color: #374151;
+}
+
+.thank-you-grand strong {
+  font-size: 1.25rem;
+  color: #111827;
+  letter-spacing: -0.02em;
+}
+
+.thank-you-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+  justify-content: center;
+  align-items: center;
+  margin-top: 2rem;
+}
+
+.thank-you-cta-primary {
+  text-decoration: none;
+}
+
+.thank-you-cta-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.85rem 1.75rem;
+  border-radius: 999px;
+  border: 2px solid #c7d2fe;
+  background: #fff;
+  color: #4338ca;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+  transition: border-color 0.15s ease, background 0.15s ease,
+    transform 0.15s ease;
+}
+
+.thank-you-cta-secondary:hover {
+  border-color: #818cf8;
+  background: #eef2ff;
+  transform: translateY(-1px);
+}
+
+@media (max-width: 900px) {
+  .thank-you-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .thank-you-card--summary {
+    order: -1;
+  }
+}
+
+@media (max-width: 480px) {
+  .thank-you-page {
+    padding: 0 1.1rem 3rem;
+  }
+
+  .thank-you-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .thank-you-cta-primary,
+  .thank-you-cta-secondary {
+    width: 100%;
+    text-align: center;
   }
 }
 

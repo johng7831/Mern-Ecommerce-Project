@@ -55,11 +55,19 @@ const Header = () => {
           )}
 
           {/* Cart always visible */}
-          <Link to="/cart" className="cart-link">
-            <div className="cart-wrapper">
-              <FaShoppingCart className="nav-icon" />
-              <span className="cart-count">{cartCount}</span>
-            </div>
+          <Link
+            to="/cart"
+            className="cart-link"
+            aria-label={`Shopping cart${cartCount ? `, ${cartCount} items` : ", empty"}`}
+          >
+            <span className="cart-wrapper">
+              <FaShoppingCart className="nav-icon cart-nav-icon" aria-hidden />
+              {cartCount > 0 ? (
+                <span className="cart-count" aria-hidden="true">
+                  {cartCount > 99 ? "99+" : cartCount}
+                </span>
+              ) : null}
+            </span>
           </Link>
         </div>
 

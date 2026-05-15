@@ -17,6 +17,7 @@ import Cart from "./components/customer/Cart";
 import Footer from "./components/customer/Footer";
 import Shopproduct from "./components/customer/Shopproduct";
 import Checkout from "./components/customer/Checkout";
+import Thankyou from "./components/customer/Thankyou";
 
 function App() {
   return (
@@ -37,11 +38,13 @@ function App() {
             }
           />
 
-
+         {/* =============Public Route Pages =============*/}
           <Route path="/product/:id" element={<ProductDetails />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/shop-product" element={<Shopproduct />} />
-          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/checkout" element={<Checkout />}/>
+          <Route path="/thank-you" element={<Thankyou/>} />
+
 
           {/* =============Customer Login Register  Pages =============*/}
           <Route path="/login" element={<Login />} />

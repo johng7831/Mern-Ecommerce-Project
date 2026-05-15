@@ -1,28 +1,73 @@
-const jwt = require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
+const User = require("../models/User");
 
-const protect = (req, res, next) => {
-  let token = req.headers.authorization;
+// ✅ Protect Middleware
+const protect = async (req, res, next) => {
+  try {
+    let token;
 
-  if (token && token.startsWith('Bearer')) {
-    token = token.split(' ')[1];
+    // Check token exists
+    if (
+      req.headers.authorization &&
+      req.headers.authorization.startsWith("Bearer")
+    ) {
+      token = req.headers.authorization.split(" ")[1];
 
-    try {
+      // Verify token
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      req.user = decoded; // { id, role }
+
+      // Get full user from DB
+      const user = await User.findById(decoded.id).select("-password");
+
+      if (!user) {
+        return res.status(401).json({
+          success: false,
+          message: "User not found",
+        });
+      }
+
+      // Save user in request
+      req.user = user;
+
       next();
-    } catch (error) {
-      return res.status(401).json({ message: 'Not authorized' });
+    } else {
+      return res.status(401).json({
+        success: false,
+        message: "No token provided",
+      });
     }
-  } else {
-    return res.status(401).json({ message: 'No token provided' });
+  } catch (error) {
+    console.error("AUTH ERROR:", error);
+
+    return res.status(401).json({
+      success: false,
+      message: "Not authorized",
+    });
   }
 };
 
+// ✅ Admin Middleware
 const adminOnly = (req, res, next) => {
-  if (req.user.role !== 'admin') {
-    return res.status(403).json({ message: 'Admin access only' });
+  try {
+    if (req.user && req.user.role === "admin") {
+      next();
+    } else {
+      return res.status(403).json({
+        success: false,
+        message: "Admin access only",
+      });
+    }
+  } catch (error) {
+    console.error("ADMIN ERROR:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
   }
-  next();
 };
 
-module.exports = { protect, adminOnly };
+module.exports = {
+  protect,
+  adminOnly,
+};
