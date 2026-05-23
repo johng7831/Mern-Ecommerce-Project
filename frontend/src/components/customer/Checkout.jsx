@@ -62,11 +62,27 @@ const Checkout = () => {
     try {
       setLoading(true);
 
+      // Check cart
       if (cartItems.length === 0) {
         alert("Cart is empty");
+        setLoading(false);
         return;
       }
 
+      // Get token
+      const token = localStorage.getItem("token");
+
+      console.log("TOKEN:", token);
+
+      // Check login
+      if (!token) {
+        alert("Please login first");
+        navigate("/login");
+        setLoading(false);
+        return;
+      }
+
+      // Order Data
       const orderData = {
         fullName: shippingInfo.fullName,
         email: shippingInfo.email,
@@ -81,7 +97,6 @@ const Checkout = () => {
         items: cartItems.map((item) => ({
           productId: item._id,
           name: item.name,
-          image: item.images?.[0]?.url || "",
           price: item.price,
           quantity: item.quantity || 1,
         })),
@@ -94,12 +109,17 @@ const Checkout = () => {
 
       console.log("ORDER DATA:", orderData);
 
-      const res = await axios.post(
+      // =========================
+      // API CALL
+      // =========================
+
+       const res = await axios.post(
         `${API_URL}/admin/order`,
         orderData,
         {
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -129,6 +149,7 @@ const Checkout = () => {
       setLoading(false);
     }
   };
+
 
   // =========================
   // EMPTY CART

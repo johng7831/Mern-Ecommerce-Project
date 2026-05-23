@@ -1,22 +1,25 @@
+
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 
+// ========================
 // ✅ Protect Middleware
+// ========================
 const protect = async (req, res, next) => {
   try {
     let token;
 
-    // Check token exists
+    // Check token
     if (
       req.headers.authorization &&
       req.headers.authorization.startsWith("Bearer")
     ) {
       token = req.headers.authorization.split(" ")[1];
 
-      // Verify token
+      // Verify JWT
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-      // Get full user from DB
+      // Find user
       const user = await User.findById(decoded.id).select("-password");
 
       if (!user) {
@@ -46,7 +49,9 @@ const protect = async (req, res, next) => {
   }
 };
 
+// ========================
 // ✅ Admin Middleware
+// ========================
 const adminOnly = (req, res, next) => {
   try {
     if (req.user && req.user.role === "admin") {

@@ -6,7 +6,9 @@ const OrderShow = ({ onEdit }) => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [deletingId, setDeletingId] = useState(null);
 
+  // 🔹 Fetch Orders
   const fetchOrders = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -19,7 +21,6 @@ const OrderShow = ({ onEdit }) => {
 
       console.log("API RESPONSE:", res.data);
 
-      // ✅ Handle multiple possible API formats
       if (Array.isArray(res.data)) {
         setOrders(res.data);
       } else if (Array.isArray(res.data.orders)) {
@@ -29,7 +30,6 @@ const OrderShow = ({ onEdit }) => {
       } else {
         setOrders([]);
       }
-
     } catch (err) {
       console.error(err);
       setError("Failed to load orders");
@@ -42,6 +42,33 @@ const OrderShow = ({ onEdit }) => {
     fetchOrders();
   }, []);
 
+  // 🔴 Delete Order API
+  const deleteOrder = async (id) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this order?"
+    );
+    if (!confirmDelete) return;
+
+    try {
+      setDeletingId(id);
+      const token = localStorage.getItem("token");
+
+      await axios.delete(`${API_URL}/admin/order/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      // ✅ Remove deleted order from UI instantly
+      setOrders((prev) => prev.filter((order) => order._id !== id));
+    } catch (err) {
+      console.error(err);
+      alert("Failed to delete order");
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
   if (loading) return <p>Loading orders...</p>;
   if (error) return <p>{error}</p>;
 
@@ -52,7 +79,11 @@ const OrderShow = ({ onEdit }) => {
       {orders.length === 0 ? (
         <p>No orders found</p>
       ) : (
-        <table border="1" cellPadding="10" style={{ borderCollapse: "collapse", width: "100%" }}>
+        <table
+          border="1"
+          cellPadding="10"
+          style={{ borderCollapse: "collapse", width: "100%" }}
+        >
           <thead>
             <tr>
               <th>#</th>
@@ -62,6 +93,7 @@ const OrderShow = ({ onEdit }) => {
               <th>Items</th>
               <th>Total</th>
               <th>Status</th>
+              <th>Action</th>
             </tr>
           </thead>
 
@@ -73,7 +105,7 @@ const OrderShow = ({ onEdit }) => {
                 <td>{order.phone}</td>
                 <td>{order.city}</td>
 
-                {/* ✅ Items display */}
+                {/* Items */}
                 <td>
                   {order.items && order.items.length > 0 ? (
                     order.items.map((item) => (
@@ -88,6 +120,22 @@ const OrderShow = ({ onEdit }) => {
 
                 <td>₹{order.total}</td>
                 <td>{order.status}</td>
+
+                {/* 🔴 Delete Button */}
+                <td>
+                  <button
+                    onClick={() => deleteOrder(order._id)}
+                    disabled={deletingId === order._id}
+                    style={{
+                      background: "red",
+                      color: "white",
+                      padding: "5px 10px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    {deletingId === order._id ? "Deleting..." : "Delete"}
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
