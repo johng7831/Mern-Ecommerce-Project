@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Userorder from "./Userpages/Userorder";
 
 const UserDashboard = () => {
   const [activePage, setActivePage] = useState("dashboard");
@@ -122,62 +123,8 @@ const UserDashboard = () => {
             </>
           )}
 
-          {activePage === "orders" && (
-            <>
-              <h2 className="greeting">My Orders</h2>
-              
-              <div className="page-content-card">
-                <div className="table-container">
-                  <table className="data-table">
-                    <thead>
-                      <tr>
-                        <th>Order ID</th>
-                        <th>Product</th>
-                        <th>Amount</th>
-                        <th>Status</th>
-                        <th>Date</th>
-                        <th>Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td>#ORD001</td>
-                        <td>iPhone 15 Pro</td>
-                        <td>$999</td>
-                        <td><span className="badge-warning">Pending</span></td>
-                        <td>2024-01-15</td>
-                        <td>
-                          <button className="btn-edit">View</button>
-                          <button className="btn-delete">Cancel</button>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>#ORD002</td>
-                        <td>Samsung Galaxy S24</td>
-                        <td>$899</td>
-                        <td><span className="badge-success">Delivered</span></td>
-                        <td>2024-01-10</td>
-                        <td>
-                          <button className="btn-edit">View</button>
-                          <button className="btn-primary">Reorder</button>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>#ORD003</td>
-                        <td>Nike Air Max</td>
-                        <td>$120</td>
-                        <td><span className="badge-info">Shipped</span></td>
-                        <td>2024-01-08</td>
-                        <td>
-                          <button className="btn-edit">Track</button>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </>
-          )}
+           {activePage === "orders" && <Userorder />}
+            
 
           {activePage === "settings" && (
             <>
