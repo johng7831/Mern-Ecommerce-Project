@@ -15,28 +15,71 @@ import ProductShow from "./products/Show";
 import ProductEdit from "./products/Edit";
 import ProductCreate from "./products/Create";
 
-import Ordershow from "./Orders/Show";
+// Orders
+import OrderShow from "./Orders/Show";
 import OrderEdit from "./Orders/Edit";
+
+// Collections
+import CollectionShow from "./collections/Show";
+import CollectionEdit from "./collections/Edit";
+import CollectionCreate from "./collections/Create";
 
 const AdminDashboard = () => {
   const [activePage, setActivePage] = useState("dashboard");
 
-  // Category state
+  // -------- COLLECTION STATE --------
+  const [collectionView, setCollectionView] = useState("show");
+  const [selectedCollection, setSelectedCollection] = useState(null);
+
+  // -------- CATEGORY STATE --------
   const [categoryView, setCategoryView] = useState("show");
   const [selectedCategory, setSelectedCategory] = useState(null);
 
-  // Brand state
+  // -------- BRAND STATE --------
   const [brandView, setBrandView] = useState("show");
   const [selectedBrand, setSelectedBrand] = useState(null);
 
-  // Product state
+  // -------- PRODUCT STATE --------
   const [productView, setProductView] = useState("show");
   const [selectedProduct, setSelectedProduct] = useState(null);
 
-  // Order state
+  // -------- ORDER STATE --------
   const [orderView, setOrderView] = useState("show");
   const [selectedOrder, setSelectedOrder] = useState(null);
 
+  // -------- COLLECTION RENDER --------
+  const renderCollectionsContent = () => {
+    switch (collectionView) {
+      case "edit":
+        return (
+          <CollectionEdit
+            collection={selectedCollection}
+            onBack={() => {
+              setCollectionView("show");
+              setSelectedCollection(null);
+            }}
+          />
+        );
+
+      case "create":
+        return (
+          <CollectionCreate
+            onBack={() => setCollectionView("show")}
+          />
+        );
+
+      default:
+        return (
+          <CollectionShow
+            onAdd={() => setCollectionView("create")}
+            onEdit={(col) => {
+              setSelectedCollection(col);
+              setCollectionView("edit");
+            }}
+          />
+        );
+    }
+  };
 
   // -------- CATEGORY RENDER --------
   const renderCategoryContent = () => {
@@ -53,7 +96,11 @@ const AdminDashboard = () => {
         );
 
       case "create":
-        return <CategoryCreate onBack={() => setCategoryView("show")} />;
+        return (
+          <CategoryCreate
+            onBack={() => setCategoryView("show")}
+          />
+        );
 
       default:
         return (
@@ -83,7 +130,11 @@ const AdminDashboard = () => {
         );
 
       case "create":
-        return <BrandCreate onBack={() => setBrandView("show")} />;
+        return (
+          <BrandCreate
+            onBack={() => setBrandView("show")}
+          />
+        );
 
       default:
         return (
@@ -113,7 +164,11 @@ const AdminDashboard = () => {
         );
 
       case "create":
-        return <ProductCreate onBack={() => setProductView("show")} />;
+        return (
+          <ProductCreate
+            onBack={() => setProductView("show")}
+          />
+        );
 
       default:
         return (
@@ -128,46 +183,31 @@ const AdminDashboard = () => {
     }
   };
 
-
   // -------- ORDER RENDER --------
-const renderOrderContent = () => {
-  switch (orderView) {
-    case "edit":
-      return (
-        <OrderEdit
-          order={selectedOrder}
-          onBack={() => {
-            setOrderView("show");
-            setSelectedOrder(null);
-          }}
-        />
-      );
+  const renderOrderContent = () => {
+    switch (orderView) {
+      case "edit":
+        return (
+          <OrderEdit
+            order={selectedOrder}
+            onBack={() => {
+              setOrderView("show");
+              setSelectedOrder(null);
+            }}
+          />
+        );
 
-    default:
-      return (
-        <Ordershow
-          onEdit={(order) => {
-            setSelectedOrder(order);
-            setOrderView("edit");
-          }}
-        />
-      );
-  }
-};
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+      default:
+        return (
+          <OrderShow
+            onEdit={(order) => {
+              setSelectedOrder(order);
+              setOrderView("edit");
+            }}
+          />
+        );
+    }
+  };
 
   return (
     <div className="dashboard-container admin">
@@ -180,12 +220,23 @@ const renderOrderContent = () => {
 
         <nav className="sidebar-nav">
           <ul className="nav-list">
+
             <li
               className={`nav-item ${activePage === "dashboard" ? "active" : ""}`}
               onClick={() => setActivePage("dashboard")}
             >
-              <span className="nav-icon">📊</span>
-              <span className="nav-text">Dashboard</span>
+              📊 Dashboard
+            </li>
+
+            <li
+              className={`nav-item ${activePage === "collections" ? "active" : ""}`}
+              onClick={() => {
+                setActivePage("collections");
+                setCollectionView("show");
+                setSelectedCollection(null);
+              }}
+            >
+              📚 Collections
             </li>
 
             <li
@@ -196,8 +247,7 @@ const renderOrderContent = () => {
                 setSelectedCategory(null);
               }}
             >
-              <span className="nav-icon">📁</span>
-              <span className="nav-text">Categories</span>
+              📁 Categories
             </li>
 
             <li
@@ -208,11 +258,9 @@ const renderOrderContent = () => {
                 setSelectedBrand(null);
               }}
             >
-              <span className="nav-icon">🏷️</span>
-              <span className="nav-text">Brands</span>
+              🏷️ Brands
             </li>
 
-            {/* ✅ PRODUCTS ADDED */}
             <li
               className={`nav-item ${activePage === "products" ? "active" : ""}`}
               onClick={() => {
@@ -221,24 +269,19 @@ const renderOrderContent = () => {
                 setSelectedProduct(null);
               }}
             >
-              <span className="nav-icon">📦</span>
-              <span className="nav-text">Products</span>
+              📦 Products
             </li>
 
-                {/* ✅ ORDERS ADDED */}
-           <li
-            className={`nav-item ${activePage === "orders" ? "active" : ""}`}
-            onClick={() => {
-              setActivePage("orders");
-              setOrderView("show");
-              setSelectedOrder(null);
-            }}
-          >
-            <span className="nav-icon">🧾</span>
-            <span className="nav-text">Orders</span>
-          </li>
-
-
+            <li
+              className={`nav-item ${activePage === "orders" ? "active" : ""}`}
+              onClick={() => {
+                setActivePage("orders");
+                setOrderView("show");
+                setSelectedOrder(null);
+              }}
+            >
+              🧾 Orders
+            </li>
 
           </ul>
         </nav>
@@ -247,24 +290,16 @@ const renderOrderContent = () => {
       {/* MAIN */}
       <main className="main-content">
         <div className="content-header">
-          <div className="breadcrumbs">
-            <span>Pages</span>
-            <span className="breadcrumb-separator">/</span>
-            <span style={{ textTransform: "capitalize" }}>
-              {activePage}
-            </span>
-          </div>
+          <h2 style={{ textTransform: "capitalize" }}>{activePage}</h2>
         </div>
 
         <div className="content-body">
-          {activePage === "dashboard" && (
-            <h2 className="greeting">Hello Admin 👋</h2>
-          )}
-
+          {activePage === "dashboard" && <h2>Hello Admin 👋</h2>}
+          {activePage === "collections" && renderCollectionsContent()}
           {activePage === "categories" && renderCategoryContent()}
           {activePage === "brands" && renderBrandContent()}
           {activePage === "products" && renderProductContent()}
-           {activePage === "orders" && renderOrderContent()}
+          {activePage === "orders" && renderOrderContent()}
         </div>
       </main>
     </div>

@@ -18,6 +18,7 @@ import Footer from "./components/customer/Footer";
 import Shopproduct from "./components/customer/Shopproduct";
 import Checkout from "./components/customer/Checkout";
 import Thankyou from "./components/customer/Thankyou";
+import Featuredcollecion from "./components/customer/Featuredcollection";
 
 function App() {
   return (
@@ -32,7 +33,8 @@ function App() {
             element={
               <>
                 <ImageBanner />
-                <FeaturedProducts />
+                <Featuredcollecion/>
+                {/* <FeaturedProducts /> */}
                 <NewArrivals />
               </>
             }

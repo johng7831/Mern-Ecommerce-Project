@@ -3,6 +3,14 @@ const router = express.Router();
 
 const { protect, adminOnly } = require("../middleware/authMiddleware");
 
+const {
+  createCollection,
+  getAllCollections,
+  getCollectionById,
+  updateCollection,
+  deleteCollection,
+} = require("../controllers/collectionController");
+
 // ========================
 // Category Controllers
 // ========================
@@ -57,6 +65,16 @@ router.get("/dashboard", protect, adminOnly, (req, res) => {
     message: "Welcome Admin Dashboard",
   });
 });
+
+
+// ========================
+// ✅ Collection Routes (Admin)
+// ========================
+router.post("/collection", protect, adminOnly, createCollection);
+router.get("/collections", protect, adminOnly, getAllCollections);
+router.get("/collection/:id", protect, adminOnly, getCollectionById);
+router.put("/collection/:id", protect, adminOnly, updateCollection);
+router.delete("/collection/:id", protect, adminOnly, deleteCollection);
 
 // ========================
 // ✅ Category Routes (Admin)

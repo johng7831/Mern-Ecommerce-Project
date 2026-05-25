@@ -36,40 +36,21 @@ const Header = () => {
         <Link to="/" className="logo">
           ShopEasy
         </Link>
-
-        {/* ❌ Hide BOTH nav + cart on dashboards */}
         {!isDashboardPage && (
           <>
             <nav className="nav">
-              <Link to="/">Home</Link>
-              <Link to="/shop-product">Shop</Link>
-
+              <Link to="/">New In</Link>
+              <Link to="/shop-product">Men</Link>
+              <Link to="/shop-product">Women</Link>
+              <Link to="/">Brands</Link>
               {isAdmin && (
                 <Link to="/admin/dashboard">Admin Dashboard</Link>
               )}
             </nav>
 
-            {/* CART */}
-            <Link
-              to="/cart"
-              className="cart-link"
-              aria-label={`Shopping cart${
-                cartCount ? `, ${cartCount} items` : ", empty"
-              }`}
-            >
-              <span className="cart-wrapper">
-                <FaShoppingCart className="nav-icon cart-nav-icon" />
-                {cartCount > 0 && (
-                  <span className="cart-count">
-                    {cartCount > 99 ? "99+" : cartCount}
-                  </span>
-                )}
-              </span>
-            </Link>
-          </>
-        )}
 
-        {/* AUTH (still visible everywhere unless you also want to hide it) */}
+
+           {/* AUTH (still visible everywhere unless you also want to hide it) */}
         <div className="auth">
           {user ? (
             <>
@@ -84,6 +65,35 @@ const Header = () => {
             </Link>
           )}
         </div>
+
+
+
+
+
+            {/* CART */}
+            <Link
+              to="/cart"
+              className="cart-link"
+              aria-label={`Shopping cart${
+                cartCount ? `, ${cartCount} items` : ", empty"
+              }`}
+            >
+              <span className="cart-wrapper">
+              <FaShoppingCart
+                className="nav-icon cart-nav-icon"
+                style={{ color: "white" }}
+              />
+                {cartCount > 0 && (
+                  <span className="cart-count">
+                    {cartCount > 99 ? "99+" : cartCount}
+                  </span>
+                )}
+              </span>
+            </Link>
+          </>
+        )}
+
+       
 
       </div>
     </header>
