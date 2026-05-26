@@ -414,15 +414,15 @@
   }
 }
 
-.image-banner {
+.image-banners {
   width: 100%;
-  max-width: 1200px;
+  max-width: 1445px;
   margin: 0 auto;
   overflow: hidden;
   border-radius: 12px;
 }
 
-.image-banner img {
+.image-banners img {
   width: 100%;
   height: auto;
   display: block;
@@ -431,8 +431,95 @@
 
 /* Responsive */
 @media (max-width: 768px) {
-  .image-banner {
+  .image-banners {
     max-width: 100%;
     border-radius: 8px;
   }
+}
+
+.toppicks {
+  padding: 20px 30px;
+  background: #f5f5f5;
+}
+
+/* HEADER */
+.toppicks-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.toppicks-header h2 {
+  font-size: 28px;
+  font-weight: 600;
+}
+
+/* TABS */
+.tabs {
+  display: flex;
+  gap: 10px;
+}
+
+.tab {
+  padding: 8px 18px;
+  border-radius: 20px;
+  border: 1px solid #ccc;
+  background: white;
+  cursor: pointer;
+  font-size: 14px;
+  transition: 0.3s;
+}
+
+.tab.active {
+  background: black;
+  color: white;
+  border: none;
+}
+
+/* PRODUCTS ROW */
+.products-row {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+}
+
+/* CARD */
+.product-card {
+  min-width: 200px;
+  background: transparent;
+}
+
+.product-card img {
+  width: 100%;
+  height: 180px;
+  object-fit: contain;
+  background: #eee;
+}
+
+/* TEXT */
+.price {
+  font-weight: 600;
+  margin-top: 8px;
+}
+
+.brand {
+  font-size: 13px;
+  color: gray;
+}
+
+.name {
+  font-size: 14px;
+}
+
+.Promobanner-image {
+  width: 100%;
+  overflow: hidden;
+}
+
+.Promobanner-image img {
+  width: 100%;
+  height: auto;
+  display: block;
 }

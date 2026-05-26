@@ -4,7 +4,7 @@ import "../../user.css";
 
 const Featuredcollecion = () => {
   return (
-    <div className="image-banner">
+    <div className="image-banners">
       <img src={img} alt="Featuredcollecion 1" />
 
     </div>

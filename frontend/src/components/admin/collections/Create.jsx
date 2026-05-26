@@ -1,11 +1,30 @@
 import React, { useState } from "react";
+import API_URL from "../../../api";
 
 const CollectionCreate = ({ onBack }) => {
   const [name, setName] = useState("");
 
-  const handleCreate = () => {
-    console.log("Created:", name);
-    onBack();
+  const handleSave = async () => {
+    try {
+      const token = localStorage.getItem("token");
+
+      const res = await fetch(`${API_URL}/admin/collection`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ name }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to create collection");
+      }
+
+      onBack(); // go back after success
+    } catch (error) {
+      alert(error.message || "Error creating collection");
+    }
   };
 
   return (
@@ -14,17 +33,15 @@ const CollectionCreate = ({ onBack }) => {
 
       <input
         type="text"
-        placeholder="Collection Name"
+        placeholder="Enter collection name"
         value={name}
         onChange={(e) => setName(e.target.value)}
       />
 
       <br /><br />
 
-      <button onClick={handleCreate}>Create</button>
-      <button onClick={onBack} style={{ marginLeft: "10px" }}>
-        Back
-      </button>
+      <button onClick={handleSave}>Save</button>
+      <button onClick={onBack}>Back</button>
     </div>
   );
 };

@@ -19,6 +19,9 @@ import Shopproduct from "./components/customer/Shopproduct";
 import Checkout from "./components/customer/Checkout";
 import Thankyou from "./components/customer/Thankyou";
 import Featuredcollecion from "./components/customer/Featuredcollection";
+import Toppicks from "./components/customer/Toppicks";
+import Promobanner from "./components/customer/Promobanner";
+
 
 function App() {
   return (
@@ -34,8 +37,10 @@ function App() {
               <>
                 <ImageBanner />
                 <Featuredcollecion/>
+                <Toppicks/>
+                 <Promobanner/>
                 {/* <FeaturedProducts /> */}
-                <NewArrivals />
+                {/* <NewArrivals /> */}
               </>
             }
           />

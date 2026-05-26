@@ -1,30 +1,64 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import API_URL from "../../../api";
 
 const Collectionshow = ({ onBack }) => {
-  const [name, setName] = useState("");
+  const [collections, setCollections] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleCreate = () => {
-    console.log("Created:", name);
-    onBack();
+  const fetchCollections = async () => {
+    try {
+      const token = localStorage.getItem("token");
+
+      const res = await fetch(`${API_URL}/admin/collections`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to fetch collections");
+      }
+
+      const data = await res.json();
+      console.log("API Response:", data);
+
+      // ✅ Your API clearly returns { success, data }
+      setCollections(data.data || []);
+    } catch (error) {
+      alert(error.message || "Error fetching collections");
+      setCollections([]);
+    } finally {
+      setLoading(false);
+    }
   };
+
+  useEffect(() => {
+    fetchCollections();
+  }, []);
 
   return (
     <div>
-      <h2>Create Collection</h2>
+      <h2>Collections</h2>
 
-      <input
-        type="text"
-        placeholder="Collection Name"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-      />
+      <button onClick={onBack}>Back</button>
 
-      <br /><br />
-
-      <button onClick={handleCreate}>Create</button>
-      <button onClick={onBack} style={{ marginLeft: "10px" }}>
-        Back
-      </button>
+      {loading ? (
+        <p>Loading...</p>
+      ) : collections.length === 0 ? (
+        <p>No collections found</p>
+      ) : (
+        <ul>
+          {collections.map((item) => (
+            <li key={item._id || item.id} style={{ marginBottom: "10px" }}>
+              <strong>{item.collectionTitle || "No Title"}</strong>
+              <br />
+              <span>{item.description || "No Description"}</span>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 };

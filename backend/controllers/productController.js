@@ -1,5 +1,5 @@
 const Product = require("../models/Product");
-
+const mongoose = require("mongoose");
 // ===============================
 // CREATE PRODUCT
 // ===============================
@@ -226,6 +226,52 @@ exports.getShopProducts = async (req, res) => {
       data: products,
     });
   } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+
+// ===============================
+// GET PRODUCTS BY CATEGORY
+// ===============================
+exports.getCategoryProducts = async (req, res) => {
+  try {
+    const { category } = req.query;
+
+    if (!category) {
+      return res.status(400).json({
+        success: false,
+        message: "Category ID is required",
+      });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(category)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid category ID",
+      });
+    }
+
+    const products = await Product.find({
+      category,
+      isActive: { $ne: false },
+    })
+      .populate("category", "name")
+      .populate("brand", "name")
+      .populate("images", "url")
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      count: products.length,
+      data: products,
+    });
+
+  } catch (error) {
+    console.log(error);
     res.status(500).json({
       success: false,
       message: error.message,
