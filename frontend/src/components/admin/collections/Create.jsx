@@ -2,7 +2,9 @@ import React, { useState } from "react";
 import API_URL from "../../../api";
 
 const CollectionCreate = ({ onBack }) => {
-  const [name, setName] = useState("");
+  const [collectionTitle, setCollectionTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [isActive, setIsActive] = useState(true);
 
   const handleSave = async () => {
     try {
@@ -14,14 +16,23 @@ const CollectionCreate = ({ onBack }) => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ name }),
+        body: JSON.stringify({
+          collectionTitle,
+          description,
+          images: [],
+          isActive,
+        }),
       });
 
+      const data = await res.json();
+
       if (!res.ok) {
-        throw new Error("Failed to create collection");
+        throw new Error(data.message || "Failed to create collection");
       }
 
-      onBack(); // go back after success
+      alert("Collection created successfully");
+
+      onBack();
     } catch (error) {
       alert(error.message || "Error creating collection");
     }
@@ -33,12 +44,36 @@ const CollectionCreate = ({ onBack }) => {
 
       <input
         type="text"
-        placeholder="Enter collection name"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
+        placeholder="Enter collection title"
+        value={collectionTitle}
+        onChange={(e) => setCollectionTitle(e.target.value)}
       />
 
-      <br /><br />
+      <br />
+      <br />
+
+      <textarea
+        placeholder="Enter description"
+        value={description}
+        onChange={(e) => setDescription(e.target.value)}
+        rows={4}
+        cols={40}
+      />
+
+      <br />
+      <br />
+
+      <label>
+        Active:
+        <input
+          type="checkbox"
+          checked={isActive}
+          onChange={(e) => setIsActive(e.target.checked)}
+        />
+      </label>
+
+      <br />
+      <br />
 
       <button onClick={handleSave}>Save</button>
       <button onClick={onBack}>Back</button>

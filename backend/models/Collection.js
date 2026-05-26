@@ -7,7 +7,6 @@ const collectionSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
-
     description: {
       type: String,
     },
@@ -24,9 +23,7 @@ const collectionSchema = new mongoose.Schema(
       default: true,
     },
   },
-  {
-    timestamps: true,
-  }
+  { timestamps: true }
 );
 
 module.exports = mongoose.model("Collection", collectionSchema);

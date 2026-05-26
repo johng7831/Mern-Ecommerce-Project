@@ -10,7 +10,7 @@ const imageSchema = new mongoose.Schema({
     required: true,
   },
   url: {
-    type: String, // public URL like http://localhost:5000/uploads/xxx.png
+    type: String, 
     required: true,
   },
   createdAt: {

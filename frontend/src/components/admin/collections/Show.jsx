@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
 import API_URL from "../../../api";
 
-const Collectionshow = ({ onBack }) => {
+const CollectionShow = ({ onBack, onAdd, onEdit }) => {
   const [collections, setCollections] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // =========================
+  // FETCH COLLECTIONS
+  // =========================
   const fetchCollections = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -17,14 +20,12 @@ const Collectionshow = ({ onBack }) => {
         },
       });
 
+      const data = await res.json();
+
       if (!res.ok) {
-        throw new Error("Failed to fetch collections");
+        throw new Error(data.message || "Failed to fetch collections");
       }
 
-      const data = await res.json();
-      console.log("API Response:", data);
-
-      // ✅ Your API clearly returns { success, data }
       setCollections(data.data || []);
     } catch (error) {
       alert(error.message || "Error fetching collections");
@@ -34,33 +35,132 @@ const Collectionshow = ({ onBack }) => {
     }
   };
 
+  // =========================
+  // DELETE COLLECTION
+  // =========================
+  const handleDelete = async (id) => {
+  if (!window.confirm("Are you sure you want to delete this collection?")) {
+    return;
+  }
+
+  try {
+    const token = localStorage.getItem("token");
+
+    const res = await fetch(`${API_URL}/admin/collection/${id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.message || "Failed to delete collection");
+    }
+
+    alert("Collection deleted successfully");
+
+    // optional: refresh list or go back
+    // fetchCollections();
+  } catch (error) {
+    alert(error.message || "Error deleting collection");
+  }
+};
+  // =========================
+  // LOAD DATA
+  // =========================
   useEffect(() => {
     fetchCollections();
   }, []);
 
+  // =========================
+  // LOADING
+  // =========================
+  if (loading) {
+    return <p>Loading collections...</p>;
+  }
+
+  // =========================
+  // UI
+  // =========================
   return (
-    <div>
-      <h2>Collections</h2>
+    <>
+      <h2 className="greeting">Collections Management</h2>
 
-      <button onClick={onBack}>Back</button>
+      <div className="page-content-card">
+        <div className="card-header">
+          <h3>All Collections</h3>
 
-      {loading ? (
-        <p>Loading...</p>
-      ) : collections.length === 0 ? (
-        <p>No collections found</p>
-      ) : (
-        <ul>
-          {collections.map((item) => (
-            <li key={item._id || item.id} style={{ marginBottom: "10px" }}>
-              <strong>{item.collectionTitle || "No Title"}</strong>
-              <br />
-              <span>{item.description || "No Description"}</span>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
+          <button className="btn-primary" onClick={onAdd}>
+            + Add Collection
+          </button>
+        </div>
+
+        <div className="table-container">
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th>Collection Title</th>
+                <th>Description</th>
+                <th>Status</th>
+                <th>Images</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {collections.length > 0 ? (
+                collections.map((col) => (
+                  <tr key={col._id}>
+                    <td>{col.collectionTitle}</td>
+
+                    <td>{col.description}</td>
+
+                    <td>
+                      {col.isActive ? "Active" : "Inactive"}
+                    </td>
+
+                    <td>
+                      {col.images && col.images.length > 0
+                        ? `${col.images.length} Images`
+                        : "No Images"}
+                    </td>
+
+                    <td>
+                      <button
+                        className="btn-edit"
+                        onClick={() => onEdit(col)}
+                      >
+                        Edit
+                      </button>
+
+                      <button
+                        className="btn-delete"
+                        onClick={() => handleDelete(col._id)}
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="5">No collections found</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        <br />
+
+        <button className="btn-secondary" onClick={onBack}>
+          Back
+        </button>
+      </div>
+    </>
   );
 };
 
-export default Collectionshow;
+export default CollectionShow;

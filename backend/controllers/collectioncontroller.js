@@ -1,22 +1,36 @@
 const Collection = require("../models/Collection");
+const Image = require("../models/Image");
 
-// CREATE Collection
+// CREATE Collection with images
 exports.createCollection = async (req, res) => {
   try {
-    const collection = await Collection.create(req.body);
-    res.status(201).json({
-      success: true,
-      data: collection,
+    const { title, description } = req.body;
+
+    // Save images
+    const imageDocs = [];
+
+    if (req.files) {
+      for (let file of req.files) {
+        const img = await Image.create({
+          url: file.path,
+        });
+        imageDocs.push(img._id);
+      }
+    }
+
+    const collection = await Collection.create({
+      title,
+      description,
+      images: imageDocs,
     });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+
+    res.status(201).json(collection);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 };
 
-// GET ALL Collections
+// GET ALL Collections (with images)
 exports.getAllCollections = async (req, res) => {
   try {
     const collections = await Collection.find().populate("images");
@@ -57,17 +71,36 @@ exports.getCollectionById = async (req, res) => {
   }
 };
 
-// UPDATE Collection
+// UPDATE (optional: add new images too)
 exports.updateCollection = async (req, res) => {
   try {
+    let imageIds = [];
+
+    if (req.files && req.files.length > 0) {
+      for (let file of req.files) {
+        const newImage = await Image.create({
+          url: `/uploads/${file.filename}`,
+          filename: file.filename,
+        });
+
+        imageIds.push(newImage._id);
+      }
+    }
+
+    const updateData = {
+      ...req.body,
+    };
+
+    // if new images uploaded, push them
+    if (imageIds.length > 0) {
+      updateData.$push = { images: { $each: imageIds } };
+    }
+
     const collection = await Collection.findByIdAndUpdate(
       req.params.id,
-      req.body,
-      {
-        new: true,
-        runValidators: true,
-      }
-    );
+      updateData,
+      { new: true }
+    ).populate("images");
 
     if (!collection) {
       return res.status(404).json({
