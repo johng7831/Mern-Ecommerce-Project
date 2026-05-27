@@ -32,7 +32,7 @@ const productSchema = new mongoose.Schema(
         type: mongoose.Schema.Types.ObjectId, 
         ref: "Image" 
       }
-    ], // 🔥 stores image ObjectIds
+    ], 
 
     stock: { 
       type: Number, 
@@ -56,7 +56,7 @@ const productSchema = new mongoose.Schema(
     },
   },
   { 
-    timestamps: true // 🔥 required for New Arrivals (createdAt)
+    timestamps: true 
   }
 );
 

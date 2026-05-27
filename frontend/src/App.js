@@ -20,6 +20,7 @@ import Featuredcollecion from "./components/customer/Featuredcollection";
 import Toppicks from "./components/customer/Toppicks";
 import Promobanner from "./components/customer/Promobanner";
 import Collections from "./components/customer/Collections";
+import CollectionProducts from "./components/customer/CollectionProducts";
 
 function App() {
   return (
@@ -47,6 +48,7 @@ function App() {
 
          {/* =============Public Route Pages =============*/}
           <Route path="/product/:id" element={<ProductDetails />} />
+          <Route path="/collection/:id"element={<CollectionProducts />}/> 
           <Route path="/cart" element={<Cart />} />
           <Route path="/shop-product" element={<Shopproduct />} />
           <Route path="/checkout" element={<Checkout />}/>

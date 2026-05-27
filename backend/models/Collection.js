@@ -1,5 +1,3 @@
-// models/Collection.js
-
 const mongoose = require("mongoose");
 
 const collectionSchema = new mongoose.Schema(
@@ -12,9 +10,10 @@ const collectionSchema = new mongoose.Schema(
 
     description: {
       type: String,
+      trim: true,
     },
 
-    // Collection Images
+    // Collection banner/gallery images
     images: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -22,11 +21,12 @@ const collectionSchema = new mongoose.Schema(
       },
     ],
 
-    // Products inside collection
+    // Selected products from Product DB
     products: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Product",
+        required: true,
       },
     ],
 

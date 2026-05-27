@@ -1,23 +1,64 @@
+const mongoose = require("mongoose");
+
 const Collection = require("../models/Collection");
+const Product = require("../models/Product");
 const Image = require("../models/Image");
+
 
 // ======================================
 // CREATE COLLECTION
 // ======================================
 exports.createCollection = async (req, res) => {
   try {
-    const { collectionTitle, description, images,products,isActive } = req.body;
+    const {
+      collectionTitle,
+      description,
+      images,
+      products,
+      isActive,
+    } = req.body;
 
+    // =========================
+    // VALIDATE PRODUCTS
+    // =========================
+    if (!products || !Array.isArray(products) || products.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Please select at least one product",
+      });
+    }
+
+    for (const productId of products) {
+      if (!mongoose.Types.ObjectId.isValid(productId)) {
+        return res.status(400).json({
+          success: false,
+          message: `Invalid product ID: ${productId}`,
+        });
+      }
+
+      const productExists = await Product.findById(productId);
+
+      if (!productExists) {
+        return res.status(404).json({
+          success: false,
+          message: `Product not found: ${productId}`,
+        });
+      }
+    }
+
+    // =========================
+    // HANDLE IMAGES
+    // =========================
     let imageIds = [];
 
-    // Existing image IDs
+    // Existing Image IDs
     if (images) {
       imageIds = Array.isArray(images) ? images : [images];
     }
 
-    // New uploaded files
+    // Uploaded Files
     if (req.files && req.files.length > 0) {
-      for (let file of req.files) {
+      for (const file of req.files) {
         const img = await Image.create({
           filename: file.filename,
           path: file.path.replace(/\\/g, "/"),
@@ -28,21 +69,46 @@ exports.createCollection = async (req, res) => {
       }
     }
 
-    // Create collection
+    // =========================
+    // CREATE COLLECTION
+    // =========================
     let collection = await Collection.create({
       collectionTitle,
       description,
       images: imageIds,
-      products:products,
+      products,
       isActive,
     });
 
-    // Populate images
-    collection = await Collection.findById(collection._id).populate("images");
+    // =========================
+    // POPULATE DATA
+    // =========================
+    collection = await Collection.findById(collection._id)
+      .populate("images")
+      .populate({
+        path: "products",
+        populate: [
+          {
+            path: "category",
+            select: "name",
+          },
+          {
+            path: "brand",
+            select: "name",
+          },
+          {
+            path: "images",
+            select: "url",
+          },
+        ],
+      });
 
-    // Convert images → URLs (IMPORTANT FIX)
+    // =========================
+    // RESPONSE
+    // =========================
     const response = {
       ...collection.toObject(),
+
       images: collection.images.map((img) => img.url),
     };
 
@@ -50,6 +116,7 @@ exports.createCollection = async (req, res) => {
       success: true,
       data: response,
     });
+
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -57,6 +124,7 @@ exports.createCollection = async (req, res) => {
     });
   }
 };
+
 
 // ======================================
 // GET ALL COLLECTIONS
@@ -65,9 +133,25 @@ exports.getAllCollections = async (req, res) => {
   try {
     const collections = await Collection.find()
       .populate("images")
+      .populate({
+        path: "products",
+        populate: [
+          {
+            path: "category",
+            select: "name",
+          },
+          {
+            path: "brand",
+            select: "name",
+          },
+          {
+            path: "images",
+            select: "url",
+          },
+        ],
+      })
       .sort({ createdAt: -1 });
 
-    // FIX: convert images → URLs
     const response = collections.map((col) => ({
       ...col.toObject(),
       images: col.images.map((img) => img.url),
@@ -75,8 +159,10 @@ exports.getAllCollections = async (req, res) => {
 
     res.status(200).json({
       success: true,
+      count: collections.length,
       data: response,
     });
+
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -85,12 +171,31 @@ exports.getAllCollections = async (req, res) => {
   }
 };
 
+
 // ======================================
 // GET SINGLE COLLECTION
 // ======================================
 exports.getCollectionById = async (req, res) => {
   try {
-    let collection = await Collection.findById(req.params.id).populate("images");
+    const collection = await Collection.findById(req.params.id)
+      .populate("images")
+      .populate({
+        path: "products",
+        populate: [
+          {
+            path: "category",
+            select: "name",
+          },
+          {
+            path: "brand",
+            select: "name",
+          },
+          {
+            path: "images",
+            select: "url",
+          },
+        ],
+      });
 
     if (!collection) {
       return res.status(404).json({
@@ -101,6 +206,7 @@ exports.getCollectionById = async (req, res) => {
 
     const response = {
       ...collection.toObject(),
+
       images: collection.images.map((img) => img.url),
     };
 
@@ -108,6 +214,7 @@ exports.getCollectionById = async (req, res) => {
       success: true,
       data: response,
     });
+
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -116,13 +223,46 @@ exports.getCollectionById = async (req, res) => {
   }
 };
 
+
 // ======================================
 // UPDATE COLLECTION
 // ======================================
 exports.updateCollection = async (req, res) => {
   try {
-    const { collectionTitle, description, images, isActive } = req.body;
+    const {
+      collectionTitle,
+      description,
+      images,
+      products,
+      isActive,
+    } = req.body;
 
+    // =========================
+    // VALIDATE PRODUCTS
+    // =========================
+    if (products && Array.isArray(products)) {
+      for (const productId of products) {
+        if (!mongoose.Types.ObjectId.isValid(productId)) {
+          return res.status(400).json({
+            success: false,
+            message: `Invalid product ID: ${productId}`,
+          });
+        }
+
+        const productExists = await Product.findById(productId);
+
+        if (!productExists) {
+          return res.status(404).json({
+            success: false,
+            message: `Product not found: ${productId}`,
+          });
+        }
+      }
+    }
+
+    // =========================
+    // HANDLE IMAGES
+    // =========================
     let imageIds = [];
 
     if (images) {
@@ -130,7 +270,7 @@ exports.updateCollection = async (req, res) => {
     }
 
     if (req.files && req.files.length > 0) {
-      for (let file of req.files) {
+      for (const file of req.files) {
         const img = await Image.create({
           filename: file.filename,
           path: file.path.replace(/\\/g, "/"),
@@ -141,16 +281,40 @@ exports.updateCollection = async (req, res) => {
       }
     }
 
+    // =========================
+    // UPDATE COLLECTION
+    // =========================
     let collection = await Collection.findByIdAndUpdate(
       req.params.id,
       {
         collectionTitle,
         description,
         images: imageIds,
+        products,
         isActive,
       },
-      { new: true }
-    ).populate("images");
+      {
+        new: true,
+      }
+    )
+      .populate("images")
+      .populate({
+        path: "products",
+        populate: [
+          {
+            path: "category",
+            select: "name",
+          },
+          {
+            path: "brand",
+            select: "name",
+          },
+          {
+            path: "images",
+            select: "url",
+          },
+        ],
+      });
 
     if (!collection) {
       return res.status(404).json({
@@ -161,6 +325,7 @@ exports.updateCollection = async (req, res) => {
 
     const response = {
       ...collection.toObject(),
+
       images: collection.images.map((img) => img.url),
     };
 
@@ -168,6 +333,7 @@ exports.updateCollection = async (req, res) => {
       success: true,
       data: response,
     });
+
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -175,6 +341,7 @@ exports.updateCollection = async (req, res) => {
     });
   }
 };
+
 
 // ======================================
 // DELETE COLLECTION
@@ -194,6 +361,7 @@ exports.deleteCollection = async (req, res) => {
       success: true,
       message: "Collection deleted successfully",
     });
+
   } catch (error) {
     res.status(500).json({
       success: false,
