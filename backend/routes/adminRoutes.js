@@ -78,7 +78,6 @@ router.put("/collection/:id", protect, adminOnly, updateCollection);
 router.delete("/collection/:id", protect, adminOnly, deleteCollection);
 
 
-
 // ========================
 // ✅ Category Routes (Admin)
 // ========================

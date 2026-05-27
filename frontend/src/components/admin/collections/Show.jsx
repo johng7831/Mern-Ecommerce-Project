@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import API_URL from "../../../api";
 
+
 const CollectionShow = ({ onBack, onAdd, onEdit }) => {
   const [collections, setCollections] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -39,34 +40,35 @@ const CollectionShow = ({ onBack, onAdd, onEdit }) => {
   // DELETE COLLECTION
   // =========================
   const handleDelete = async (id) => {
-  if (!window.confirm("Are you sure you want to delete this collection?")) {
-    return;
-  }
-
-  try {
-    const token = localStorage.getItem("token");
-
-    const res = await fetch(`${API_URL}/admin/collection/${id}`, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      throw new Error(data.message || "Failed to delete collection");
+    if (!window.confirm("Are you sure you want to delete this collection?")) {
+      return;
     }
 
-    alert("Collection deleted successfully");
+    try {
+      const token = localStorage.getItem("token");
 
-    // optional: refresh list or go back
-    // fetchCollections();
-  } catch (error) {
-    alert(error.message || "Error deleting collection");
-  }
-};
+      const res = await fetch(`${API_URL}/admin/collection/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || "Failed to delete collection");
+      }
+
+      alert("Collection deleted successfully");
+
+      // refresh list after delete
+      fetchCollections();
+    } catch (error) {
+      alert(error.message || "Error deleting collection");
+    }
+  };
+
   // =========================
   // LOAD DATA
   // =========================
@@ -117,14 +119,38 @@ const CollectionShow = ({ onBack, onAdd, onEdit }) => {
 
                     <td>{col.description}</td>
 
-                    <td>
-                      {col.isActive ? "Active" : "Inactive"}
-                    </td>
+                    <td>{col.isActive ? "Active" : "Inactive"}</td>
 
+                    {/* ================= IMAGE FIX ================= */}
                     <td>
-                      {col.images && col.images.length > 0
-                        ? `${col.images.length} Images`
-                        : "No Images"}
+                      {col.images && col.images.length > 0 ? (
+                        <div
+                          style={{
+                            display: "flex",
+                            gap: "6px",
+                            flexWrap: "wrap",
+                          }}
+                        >
+                          {col.images.map((img, index) => (
+                            <img
+                              key={index}
+                              src={img}
+                              alt="collection"
+                              onClick={() => window.open(img, "_blank")}
+                              style={{
+                                width: "50px",
+                                height: "50px",
+                                objectFit: "cover",
+                                borderRadius: "6px",
+                                border: "1px solid #ddd",
+                                cursor: "pointer",
+                              }}
+                            />
+                          ))}
+                        </div>
+                      ) : (
+                        "No Images"
+                      )}
                     </td>
 
                     <td>

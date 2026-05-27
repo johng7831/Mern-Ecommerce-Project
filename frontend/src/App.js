@@ -3,11 +3,9 @@ import Header from "./components/customer/Header";
 import ImageBanner from "./components/customer/ImageBanner";
 import Login from "./components/customer/Login";
 import Register from "./components/customer/Register";
-
 import AdminLogin from "./components/admin/AdminLogin";
 import AdminDashboard from "./components/admin/AdminDashboard";
 import UserDashboard from "./components/customer/UserDashboard";
-
 import { AuthProvider } from "./context/AuthContext";
 import { AdminRoute, UserRoute } from "./utils/ProtectedRoutes";
 import FeaturedProducts from "./components/customer/Featuredproduct";
@@ -21,7 +19,7 @@ import Thankyou from "./components/customer/Thankyou";
 import Featuredcollecion from "./components/customer/Featuredcollection";
 import Toppicks from "./components/customer/Toppicks";
 import Promobanner from "./components/customer/Promobanner";
-
+import Collections from "./components/customer/Collections";
 
 function App() {
   return (
@@ -38,7 +36,9 @@ function App() {
                 <ImageBanner />
                 <Featuredcollecion/>
                 <Toppicks/>
+                 <Collections/>
                  <Promobanner/>
+                
                 {/* <FeaturedProducts /> */}
                 {/* <NewArrivals /> */}
               </>

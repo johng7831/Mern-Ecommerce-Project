@@ -23,7 +23,6 @@ if (!fs.existsSync(uploadsDir)) {
 // Serve images publicly
 app.use("/uploads", express.static(uploadsDir));
 
-
 // Payment routes
 const paymentRoutes = require("./routes/paymentRoutes");
 app.use("/api/payment", paymentRoutes)

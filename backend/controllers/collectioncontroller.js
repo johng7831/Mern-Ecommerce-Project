@@ -1,43 +1,53 @@
 const Collection = require("../models/Collection");
 const Image = require("../models/Image");
 
-// CREATE Collection with images
+// ======================================
+// CREATE COLLECTION
+// ======================================
 exports.createCollection = async (req, res) => {
   try {
-    const { title, description } = req.body;
+    const { collectionTitle, description, images, isActive } = req.body;
 
-    // Save images
-    const imageDocs = [];
+    let imageIds = [];
 
-    if (req.files) {
+    // Existing image IDs
+    if (images) {
+      imageIds = Array.isArray(images) ? images : [images];
+    }
+
+    // New uploaded files
+    if (req.files && req.files.length > 0) {
       for (let file of req.files) {
         const img = await Image.create({
-          url: file.path,
+          filename: file.filename,
+          path: file.path.replace(/\\/g, "/"),
+          url: `${req.protocol}://${req.get("host")}/uploads/${file.filename}`,
         });
-        imageDocs.push(img._id);
+
+        imageIds.push(img._id);
       }
     }
 
-    const collection = await Collection.create({
-      title,
+    // Create collection
+    let collection = await Collection.create({
+      collectionTitle,
       description,
-      images: imageDocs,
+      images: imageIds,
+      isActive,
     });
 
-    res.status(201).json(collection);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
+    // Populate images
+    collection = await Collection.findById(collection._id).populate("images");
 
-// GET ALL Collections (with images)
-exports.getAllCollections = async (req, res) => {
-  try {
-    const collections = await Collection.find().populate("images");
+    // Convert images → URLs (IMPORTANT FIX)
+    const response = {
+      ...collection.toObject(),
+      images: collection.images.map((img) => img.url),
+    };
 
-    res.status(200).json({
+    res.status(201).json({
       success: true,
-      data: collections,
+      data: response,
     });
   } catch (error) {
     res.status(500).json({
@@ -47,10 +57,39 @@ exports.getAllCollections = async (req, res) => {
   }
 };
 
-// GET SINGLE Collection
+// ======================================
+// GET ALL COLLECTIONS
+// ======================================
+exports.getAllCollections = async (req, res) => {
+  try {
+    const collections = await Collection.find()
+      .populate("images")
+      .sort({ createdAt: -1 });
+
+    // FIX: convert images → URLs
+    const response = collections.map((col) => ({
+      ...col.toObject(),
+      images: col.images.map((img) => img.url),
+    }));
+
+    res.status(200).json({
+      success: true,
+      data: response,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// ======================================
+// GET SINGLE COLLECTION
+// ======================================
 exports.getCollectionById = async (req, res) => {
   try {
-    const collection = await Collection.findById(req.params.id).populate("images");
+    let collection = await Collection.findById(req.params.id).populate("images");
 
     if (!collection) {
       return res.status(404).json({
@@ -59,9 +98,14 @@ exports.getCollectionById = async (req, res) => {
       });
     }
 
+    const response = {
+      ...collection.toObject(),
+      images: collection.images.map((img) => img.url),
+    };
+
     res.status(200).json({
       success: true,
-      data: collection,
+      data: response,
     });
   } catch (error) {
     res.status(500).json({
@@ -71,34 +115,39 @@ exports.getCollectionById = async (req, res) => {
   }
 };
 
-// UPDATE (optional: add new images too)
+// ======================================
+// UPDATE COLLECTION
+// ======================================
 exports.updateCollection = async (req, res) => {
   try {
+    const { collectionTitle, description, images, isActive } = req.body;
+
     let imageIds = [];
+
+    if (images) {
+      imageIds = Array.isArray(images) ? images : [images];
+    }
 
     if (req.files && req.files.length > 0) {
       for (let file of req.files) {
-        const newImage = await Image.create({
-          url: `/uploads/${file.filename}`,
+        const img = await Image.create({
           filename: file.filename,
+          path: file.path.replace(/\\/g, "/"),
+          url: `${req.protocol}://${req.get("host")}/uploads/${file.filename}`,
         });
 
-        imageIds.push(newImage._id);
+        imageIds.push(img._id);
       }
     }
 
-    const updateData = {
-      ...req.body,
-    };
-
-    // if new images uploaded, push them
-    if (imageIds.length > 0) {
-      updateData.$push = { images: { $each: imageIds } };
-    }
-
-    const collection = await Collection.findByIdAndUpdate(
+    let collection = await Collection.findByIdAndUpdate(
       req.params.id,
-      updateData,
+      {
+        collectionTitle,
+        description,
+        images: imageIds,
+        isActive,
+      },
       { new: true }
     ).populate("images");
 
@@ -109,9 +158,14 @@ exports.updateCollection = async (req, res) => {
       });
     }
 
+    const response = {
+      ...collection.toObject(),
+      images: collection.images.map((img) => img.url),
+    };
+
     res.status(200).json({
       success: true,
-      data: collection,
+      data: response,
     });
   } catch (error) {
     res.status(500).json({
@@ -121,7 +175,9 @@ exports.updateCollection = async (req, res) => {
   }
 };
 
-// DELETE Collection
+// ======================================
+// DELETE COLLECTION
+// ======================================
 exports.deleteCollection = async (req, res) => {
   try {
     const collection = await Collection.findByIdAndDelete(req.params.id);
