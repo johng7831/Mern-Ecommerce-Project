@@ -1,135 +1,341 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import API_URL from "../../../api";
 
-const UpdateCollection = ({ collectionId, token }) => {
-  const [formData, setFormData] = useState({
-    collectionTitle: "",
-    description: "",
-    products: [],
-    images: [],
-    isActive: true,
-  });
+const EditCollection = ({ collection, onBack }) => {
+  const [collectionTitle, setCollectionTitle] = useState(
+    collection?.collectionTitle || ""
+  );
 
-  // Load existing data
+  const [description, setDescription] = useState(
+    collection?.description || ""
+  );
+
+  // PRODUCT IDS
+  const [products, setProducts] = useState(
+    collection?.products?.map((item) =>
+      typeof item === "object" ? item._id : item
+    ) || []
+  );
+
+  // IMAGE IDS
+  const [images, setImages] = useState(
+    collection?.imageObjects?.map((img) => img._id) || []
+  );
+
+  // IMAGE PREVIEW URLS
+  const [imagePreviews, setImagePreviews] = useState(
+    collection?.images || []
+  );
+
+  const [allProducts, setAllProducts] = useState([]);
+
+  const [isActive, setIsActive] = useState(
+    collection?.isActive ?? true
+  );
+
+  const [loading, setLoading] = useState(false);
+
+  // ============================================
+  // FETCH PRODUCTS
+  // ============================================
+
   useEffect(() => {
-    const fetchCollection = async () => {
-      try {
-        const res = await fetch(
-          `${API_URL}/admin/collection/${collectionId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+    fetchProducts();
+  }, []);
 
-        const data = await res.json();
+  const fetchProducts = async () => {
+    try {
+      const token = localStorage.getItem("token");
 
-        if (data.success) {
-          setFormData({
-            collectionTitle: data.data.collectionTitle || "",
-            description: data.data.description || "",
-            products: data.data.products?.map((p) => p._id) || [],
-            images: data.data.images?.map((img) => img._id || img) || [],
-            isActive: data.data.isActive,
-          });
-        }
-      } catch (error) {
-        console.error("Error fetching collection:", error);
+      const res = await fetch(`${API_URL}/admin/products`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await res.json();
+
+      setAllProducts(data.data || []);
+    } catch (error) {
+      console.error("Error fetching products", error);
+    }
+  };
+
+  // ============================================
+  // HANDLE PRODUCT SELECT
+  // ============================================
+
+  const handleProductSelect = (productId) => {
+    setProducts((prev) => {
+      const exists = prev.includes(productId);
+
+      if (exists) {
+        return prev.filter((id) => id !== productId);
+      } else {
+        return [...prev, productId];
       }
-    };
-
-    if (collectionId) fetchCollection();
-  }, [collectionId, token]);
-
-  // Handle input change
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
     });
   };
 
-  // Submit update
-  const handleUpdate = async (e) => {
-    e.preventDefault();
+  // ============================================
+  // HANDLE IMAGE UPLOAD
+  // ============================================
+
+  const handleImageUpload = async (e) => {
+    const files = Array.from(e.target.files);
+
+    for (let file of files) {
+      const formData = new FormData();
+
+      formData.append("image", file);
+
+      try {
+        const res = await fetch(`${API_URL}/upload`, {
+          method: "POST",
+          body: formData,
+        });
+
+        const data = await res.json();
+
+        // SAVE IMAGE ID
+        setImages((prev) => [...prev, data.id]);
+
+        // SAVE IMAGE PREVIEW URL
+        setImagePreviews((prev) => [
+          ...prev,
+          data.url ||
+            `${API_URL.replace("/api", "")}/uploads/${data.filename}`,
+        ]);
+      } catch (error) {
+        console.error("Image upload error", error);
+        alert("Image upload failed");
+      }
+    }
+  };
+
+  // ============================================
+  // REMOVE IMAGE
+  // ============================================
+
+  const handleRemoveImage = (indexToRemove) => {
+    setImages((prev) =>
+      prev.filter((_, index) => index !== indexToRemove)
+    );
+
+    setImagePreviews((prev) =>
+      prev.filter((_, index) => index !== indexToRemove)
+    );
+  };
+
+  // ============================================
+  // HANDLE UPDATE
+  // ============================================
+
+  const handleUpdate = async () => {
+    if (!collectionTitle) {
+      alert("Collection title is required");
+      return;
+    }
 
     try {
+      setLoading(true);
+
+      const token = localStorage.getItem("token");
+
+      console.log({
+        collectionTitle,
+        description,
+        images,
+        products,
+        isActive,
+      });
+
       const res = await fetch(
-        `${API_URL}/admin/collection/${collectionId}`,
+        `${API_URL}/admin/collection/${collection._id}`,
         {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify(formData),
+
+          body: JSON.stringify({
+            collectionTitle,
+            description,
+            images,
+            products,
+            isActive,
+          }),
         }
       );
 
       const data = await res.json();
 
-      if (data.success) {
-        alert("Collection updated successfully ✅");
-        console.log(data.data);
-      } else {
-        alert(data.message || "Update failed ❌");
+      console.log(data);
+
+      if (!res.ok) {
+        throw new Error(data.message || "Update failed");
       }
+
+      alert("Collection updated successfully");
+
+      onBack();
     } catch (error) {
-      console.error("Update error:", error);
-      alert("Something went wrong ❌");
+      console.error(error);
+      alert(error.message || "Error updating collection");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <form onSubmit={handleUpdate}>
-      <h2>Update Collection</h2>
+    <div className="admin-card">
+      <h2>Edit Collection</h2>
 
-      <input
-        type="text"
-        name="collectionTitle"
-        value={formData.collectionTitle}
-        onChange={handleChange}
-        placeholder="Collection Title"
-      />
+      {/* COLLECTION TITLE */}
+      <div className="form-group">
+        <label>Collection Title</label>
 
-      <textarea
-        name="description"
-        value={formData.description}
-        onChange={handleChange}
-        placeholder="Description"
-      />
-
-      <input
-        type="text"
-        name="products"
-        value={formData.products.join(",")}
-        onChange={(e) =>
-          setFormData({
-            ...formData,
-            products: e.target.value.split(","),
-          })
-        }
-        placeholder="Product IDs (comma separated)"
-      />
-
-      <label>
-        Active:
         <input
-          type="checkbox"
-          checked={formData.isActive}
-          onChange={(e) =>
-            setFormData({
-              ...formData,
-              isActive: e.target.checked,
-            })
-          }
+          type="text"
+          value={collectionTitle}
+          onChange={(e) => setCollectionTitle(e.target.value)}
         />
-      </label>
+      </div>
 
-      <button type="submit">Update Collection</button>
-    </form>
+      {/* DESCRIPTION */}
+      <div className="form-group">
+        <label>Description</label>
+
+        <textarea
+          rows="4"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+        />
+      </div>
+
+      {/* ACTIVE */}
+      <div className="form-group">
+        <label>
+          <input
+            type="checkbox"
+            checked={isActive}
+            onChange={(e) => setIsActive(e.target.checked)}
+          />
+
+          Active
+        </label>
+      </div>
+
+      {/* PRODUCTS */}
+      <div className="form-group">
+        <label>Select Products</label>
+
+        <div
+          style={{
+            maxHeight: "250px",
+            overflowY: "auto",
+            border: "1px solid #ddd",
+            padding: "10px",
+            borderRadius: "8px",
+          }}
+        >
+          {allProducts.map((product) => (
+            <div key={product._id}>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={products.includes(product._id)}
+                  onChange={() => handleProductSelect(product._id)}
+                />
+
+                {product.name}
+              </label>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* IMAGES */}
+      <div className="form-group">
+        <label>Collection Images</label>
+
+        <input
+          type="file"
+          multiple
+          onChange={handleImageUpload}
+        />
+
+        <div
+          style={{
+            display: "flex",
+            gap: "10px",
+            flexWrap: "wrap",
+            marginTop: "10px",
+          }}
+        >
+          {imagePreviews.map((img, index) => (
+            <div
+              key={index}
+              className="image-preview-item"
+              style={{
+                position: "relative",
+              }}
+            >
+              <img
+                src={img}
+                alt="collection"
+                style={{
+                  width: 70,
+                  height: 70,
+                  objectFit: "cover",
+                  borderRadius: "6px",
+                  border: "1px solid #ddd",
+                }}
+              />
+
+              <button
+                type="button"
+                onClick={() => handleRemoveImage(index)}
+                style={{
+                  position: "absolute",
+                  top: "-5px",
+                  right: "-5px",
+                  background: "red",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "50%",
+                  width: "20px",
+                  height: "20px",
+                  cursor: "pointer",
+                }}
+              >
+                ×
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ACTIONS */}
+      <div className="form-actions">
+        <button
+          className="btn-secondary"
+          onClick={onBack}
+        >
+          ⬅ Back
+        </button>
+
+        <button
+          className="btn-primary"
+          onClick={handleUpdate}
+          disabled={loading}
+        >
+          {loading ? "Updating..." : "Update Collection"}
+        </button>
+      </div>
+    </div>
   );
 };
 
-export default UpdateCollection;
+export default EditCollection;

@@ -52,8 +52,12 @@ exports.createCollection = async (req, res) => {
     let imageIds = [];
 
     // Existing Image IDs
-    if (images) {
-      imageIds = Array.isArray(images) ? images : [images];
+    if (images && Array.isArray(images)) {
+      for (const img of images) {
+        if (mongoose.Types.ObjectId.isValid(img)) {
+          imageIds.push(img);
+        }
+      }
     }
 
     // Uploaded Files
@@ -81,7 +85,7 @@ exports.createCollection = async (req, res) => {
     });
 
     // =========================
-    // POPULATE DATA
+    // POPULATE
     // =========================
     collection = await Collection.findById(collection._id)
       .populate("images")
@@ -109,6 +113,8 @@ exports.createCollection = async (req, res) => {
     const response = {
       ...collection.toObject(),
 
+      imageObjects: collection.images,
+
       images: collection.images.map((img) => img.url),
     };
 
@@ -118,6 +124,8 @@ exports.createCollection = async (req, res) => {
     });
 
   } catch (error) {
+    console.log(error);
+
     res.status(500).json({
       success: false,
       message: error.message,
@@ -154,6 +162,9 @@ exports.getAllCollections = async (req, res) => {
 
     const response = collections.map((col) => ({
       ...col.toObject(),
+
+      imageObjects: col.images,
+
       images: col.images.map((img) => img.url),
     }));
 
@@ -164,6 +175,8 @@ exports.getAllCollections = async (req, res) => {
     });
 
   } catch (error) {
+    console.log(error);
+
     res.status(500).json({
       success: false,
       message: error.message,
@@ -207,6 +220,8 @@ exports.getCollectionById = async (req, res) => {
     const response = {
       ...collection.toObject(),
 
+      imageObjects: collection.images,
+
       images: collection.images.map((img) => img.url),
     };
 
@@ -216,6 +231,8 @@ exports.getCollectionById = async (req, res) => {
     });
 
   } catch (error) {
+    console.log(error);
+
     res.status(500).json({
       success: false,
       message: error.message,
@@ -242,6 +259,7 @@ exports.updateCollection = async (req, res) => {
     // =========================
     if (products && Array.isArray(products)) {
       for (const productId of products) {
+
         if (!mongoose.Types.ObjectId.isValid(productId)) {
           return res.status(400).json({
             success: false,
@@ -265,12 +283,32 @@ exports.updateCollection = async (req, res) => {
     // =========================
     let imageIds = [];
 
-    if (images) {
-      imageIds = Array.isArray(images) ? images : [images];
+    if (images && Array.isArray(images)) {
+
+      for (const img of images) {
+
+        // Existing ObjectId
+        if (mongoose.Types.ObjectId.isValid(img)) {
+          imageIds.push(img);
+        }
+
+        // Existing URL
+        else if (typeof img === "string") {
+
+          const imageDoc = await Image.findOne({ url: img });
+
+          if (imageDoc) {
+            imageIds.push(imageDoc._id);
+          }
+        }
+      }
     }
 
+    // Uploaded New Files
     if (req.files && req.files.length > 0) {
+
       for (const file of req.files) {
+
         const img = await Image.create({
           filename: file.filename,
           path: file.path.replace(/\\/g, "/"),
@@ -323,8 +361,13 @@ exports.updateCollection = async (req, res) => {
       });
     }
 
+    // =========================
+    // RESPONSE
+    // =========================
     const response = {
       ...collection.toObject(),
+
+      imageObjects: collection.images,
 
       images: collection.images.map((img) => img.url),
     };
@@ -335,6 +378,8 @@ exports.updateCollection = async (req, res) => {
     });
 
   } catch (error) {
+    console.log(error);
+
     res.status(500).json({
       success: false,
       message: error.message,
@@ -363,6 +408,8 @@ exports.deleteCollection = async (req, res) => {
     });
 
   } catch (error) {
+    console.log(error);
+
     res.status(500).json({
       success: false,
       message: error.message,
