@@ -1,3 +1,5 @@
+// models/Collection.js
+
 const mongoose = require("mongoose");
 
 const collectionSchema = new mongoose.Schema(
@@ -7,14 +9,24 @@ const collectionSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+
     description: {
       type: String,
     },
 
+    // Collection Images
     images: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Image",
+      },
+    ],
+
+    // Products inside collection
+    products: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Product",
       },
     ],
 
@@ -23,7 +35,9 @@ const collectionSchema = new mongoose.Schema(
       default: true,
     },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  }
 );
 
 module.exports = mongoose.model("Collection", collectionSchema);

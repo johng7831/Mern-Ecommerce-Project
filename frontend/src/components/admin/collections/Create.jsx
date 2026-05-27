@@ -1,70 +1,105 @@
 import React, { useState } from "react";
+import axios from "axios";
 import API_URL from "../../../api";
 
-const CollectionCreate = ({ onBack }) => {
-  const [collectionTitle, setCollectionTitle] = useState("");
+const CollectionPage = () => {
+  const [collections, setCollections] = useState([]);
+  const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [isActive, setIsActive] = useState(true);
-  const [images, setImages] = useState([]);
+  const [selectedImage, setSelectedImage] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // =========================
-  // HANDLE IMAGE SELECT
-  // =========================
-  const handleImageChange = (e) => {
-    const files = Array.from(e.target.files);
-    setImages(files);
-  };
+  const token = localStorage.getItem("token");
 
-  // =========================
-  // SAVE COLLECTION
-  // =========================
-  const handleSave = async () => {
-    if (!collectionTitle.trim()) {
-      alert("Collection title is required");
-      return;
-    }
-
-    setLoading(true);
-
+  // =========================================
+  // FETCH COLLECTIONS (FIXED: added function)
+  // =========================================
+  const fetchCollections = async () => {
     try {
-      const token = localStorage.getItem("token");
-
-      const formData = new FormData();
-      formData.append("collectionTitle", collectionTitle);
-      formData.append("description", description);
-      formData.append("isActive", isActive);
-
-      // append images if selected
-      images.forEach((img) => {
-        formData.append("images", img);
-      });
-
-      const res = await fetch(`${API_URL}/admin/collection`, {
-        method: "POST",
+      const res = await axios.get(`${API_URL}/admin/collection`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-        body: formData,
       });
+      setCollections(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-      const data = await res.json();
+  // =========================================
+// UPLOAD IMAGE
+// =========================================
+const uploadImage = async (file) => {
+  try {
+    const formData = new FormData();
+    formData.append("image", file);
 
-      if (!res.ok) {
-        throw new Error(data.message || "Failed to create collection");
+    const response = await axios.post(
+      `${API_URL}/upload`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+
+    return response.data.id;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+};
+
+  // =========================================
+  // CREATE COLLECTION
+  // =========================================
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      setLoading(true);
+
+      let imageId = null;
+
+      // Upload image first
+      if (selectedImage) {
+        imageId = await uploadImage(selectedImage);
       }
 
-      alert("Collection created successfully");
+      const payload = {
+        collectionTitle: title,
+        description,
+        images: imageId ? [imageId] : [],
+        isActive: true,
+      };
 
-      // reset form
-      setCollectionTitle("");
+      const res = await axios.post(
+        `${API_URL}/admin/collection`,
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      console.log(res.data); // FIXED (was response.data)
+
+      alert("Collection Created Successfully");
+
+      // Reset form
+      setTitle("");
       setDescription("");
-      setImages([]);
-      setIsActive(true);
+      setSelectedImage(null);
 
-      onBack();
+      // Refresh collections
+      fetchCollections();
+
     } catch (error) {
-      alert(error.message || "Error creating collection");
+      console.log(error);
+      alert("Something went wrong");
     } finally {
       setLoading(false);
     }
@@ -72,78 +107,58 @@ const CollectionCreate = ({ onBack }) => {
 
   return (
     <div style={{ padding: "20px" }}>
-      <h2>Create Collection</h2>
+      <h1>Create Collection</h1>
 
-      {/* TITLE */}
-      <input
-        type="text"
-        placeholder="Enter collection title"
-        value={collectionTitle}
-        onChange={(e) => setCollectionTitle(e.target.value)}
-        style={{ display: "block", marginBottom: "10px", padding: "8px" }}
-      />
-
-      {/* DESCRIPTION */}
-      <textarea
-        placeholder="Enter description"
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-        rows={4}
-        cols={40}
-        style={{ display: "block", marginBottom: "10px", padding: "8px" }}
-      />
-
-      {/* ACTIVE */}
-      <label style={{ display: "block", marginBottom: "10px" }}>
-        <input
-          type="checkbox"
-          checked={isActive}
-          onChange={(e) => setIsActive(e.target.checked)}
-        />
-        {" "}Active
-      </label>
-
-      {/* IMAGE UPLOAD */}
-      <input
-        type="file"
-        multiple
-        accept="image/*"
-        onChange={handleImageChange}
-        style={{ display: "block", marginBottom: "10px" }}
-      />
-
-      {/* IMAGE PREVIEW */}
-      {images.length > 0 && (
-        <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
-          {images.map((img, index) => (
-            <img
-              key={index}
-              src={URL.createObjectURL(img)}
-              alt="preview"
-              style={{
-                width: "60px",
-                height: "60px",
-                objectFit: "cover",
-                borderRadius: "6px",
-                border: "1px solid #ccc",
-              }}
-            />
-          ))}
+      <form onSubmit={handleSubmit}>
+        <div style={{ marginBottom: "15px" }}>
+          <input
+            type="text"
+            placeholder="Collection Title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            required
+            style={{
+              width: "300px",
+              padding: "10px",
+            }}
+          />
         </div>
-      )}
 
-      <br />
+        <div style={{ marginBottom: "15px" }}>
+          <textarea
+            placeholder="Description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            rows="4"
+            style={{
+              width: "300px",
+              padding: "10px",
+            }}
+          />
+        </div>
 
-      {/* BUTTONS */}
-      <button onClick={handleSave} disabled={loading}>
-        {loading ? "Saving..." : "Save"}
-      </button>
+        <div style={{ marginBottom: "15px" }}>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => setSelectedImage(e.target.files[0])}
+            required
+          />
+        </div>
 
-      <button onClick={onBack} style={{ marginLeft: "10px" }}>
-        Back
-      </button>
+        <button
+          type="submit"
+          disabled={loading}
+          style={{
+            padding: "10px 20px",
+            cursor: "pointer",
+          }}
+        >
+          {loading ? "Creating..." : "Create Collection"}
+        </button>
+      </form>
     </div>
   );
 };
 
-export default CollectionCreate;
+export default CollectionPage;

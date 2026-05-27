@@ -6,7 +6,7 @@ const Image = require("../models/Image");
 // ======================================
 exports.createCollection = async (req, res) => {
   try {
-    const { collectionTitle, description, images, isActive } = req.body;
+    const { collectionTitle, description, images,products,isActive } = req.body;
 
     let imageIds = [];
 
@@ -33,6 +33,7 @@ exports.createCollection = async (req, res) => {
       collectionTitle,
       description,
       images: imageIds,
+      products:products,
       isActive,
     });
 
