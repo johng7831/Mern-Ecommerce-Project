@@ -51,8 +51,6 @@ const CollectionPage = () => {
 
   // =========================================
   // FETCH PRODUCTS
-  // API:
-  // http://localhost:5001/api/admin/products
   // =========================================
   const fetchProducts = async () => {
     try {
