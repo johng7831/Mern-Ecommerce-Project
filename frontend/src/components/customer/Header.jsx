@@ -40,12 +40,9 @@ const Header = () => {
           <>
             <nav className="nav">
               <Link to="/">New In</Link>
-              <Link to="/shop-product">Men</Link>
+              <Link to="/collection/men">Men</Link>
               <Link to="/shop-product">Women</Link>
-              <Link to="/">Brands</Link>
-              {isAdmin && (
-                <Link to="/admin/dashboard">Admin Dashboard</Link>
-              )}
+              <Link to="/">Shoes</Link>
             </nav>
 
 

@@ -5,31 +5,34 @@ const ProductEdit = ({ product, onBack }) => {
   const [name, setName] = useState(product?.name || "");
   const [price, setPrice] = useState(product?.price || "");
   const [stock, setStock] = useState(product?.stock || "");
+
   const [categories, setCategories] = useState([]);
   const [brands, setBrands] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState(product?.category?._id || "");
-  const [selectedBrand, setSelectedBrand] = useState(product?.brand?._id || "");
-  // IDs to send to backend
-  const [images, setImages] = useState(product?.images?.map((img) => img._id) || []);
-  // URLs to show as preview
-  const [imagePreviews, setImagePreviews] = useState(
-    product?.images?.map((img) =>
-      img.url || `${API_URL.replace("/api", "")}/uploads/${img.filename}`
-    ) || []
+
+  const [selectedCategory, setSelectedCategory] = useState(
+    product?.category?._id || ""
   );
+
+  const [selectedBrand, setSelectedBrand] = useState(
+    product?.brand?._id || ""
+  );
+
+  const [images, setImages] = useState(
+    product?.images?.map((img) => img._id) || []
+  );
+
+  const [imagePreviews, setImagePreviews] = useState(
+    product?.images?.map((img) => img.url) || []
+  );
+
+  const [productType, setProductType] = useState(
+    product?.productType ||
+      (product?.isFeatured ? "featured" : "new")
+  );
+
   const [loading, setLoading] = useState(false);
 
-  const handleRemoveImage = (indexToRemove) => {
-    setImages((prev) => prev.filter((_, index) => index !== indexToRemove));
-    setImagePreviews((prev) => prev.filter((_, index) => index !== indexToRemove));
-  };
-  const [productType, setProductType] = useState(
-    product?.productType || (product?.isFeatured ? "featured" : "normal")
-  );
-
-
-
-  // Fetch categories and brands
+  // ================= FETCH CATEGORIES + BRANDS =================
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -47,19 +50,20 @@ const ProductEdit = ({ product, onBack }) => {
         const catData = await catRes.json();
         const brandData = await brandRes.json();
 
-        setCategories(catData);
-        setBrands(brandData);
+        // ✅ FIX HERE
+        setCategories(catData.data || []);
+        setBrands(brandData.data || []);
       } catch (error) {
-        console.error("Error fetching categories or brands", error);
+        console.error("Error fetching data", error);
       }
     };
+
     fetchData();
   }, []);
 
-  // Handle image upload
+  // ================= IMAGE UPLOAD =================
   const handleImageUpload = async (e) => {
     const files = Array.from(e.target.files);
-    const token = localStorage.getItem("token");
 
     for (let file of files) {
       const formData = new FormData();
@@ -70,51 +74,56 @@ const ProductEdit = ({ product, onBack }) => {
           method: "POST",
           body: formData,
         });
+
         const data = await res.json();
-        // store ID for backend
+
         setImages((prev) => [...prev, data.id]);
-        // store URL for preview
-        setImagePreviews((prev) => [
-          ...prev,
-          data.url || `${API_URL.replace("/api", "")}/uploads/${data.filename}`,
-        ]);
+        setImagePreviews((prev) => [...prev, data.url]);
       } catch (err) {
-        console.error("Error uploading image", err);
+        console.error(err);
         alert("Image upload failed");
       }
     }
   };
 
-  const handleUpdate = async () => {
-    if (!name || !price || !selectedCategory) {
-      alert("Name, price, and category are required");
-      return;
-    }
+  // ================= REMOVE IMAGE =================
+  const handleRemoveImage = (index) => {
+    setImages((prev) => prev.filter((_, i) => i !== index));
+    setImagePreviews((prev) => prev.filter((_, i) => i !== index));
+  };
 
+  // ================= UPDATE PRODUCT =================
+  const handleUpdate = async () => {
     try {
       setLoading(true);
+
       const token = localStorage.getItem("token");
 
-      const res = await fetch(`${API_URL}/admin/product/${product._id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          name,
-          price,
-          stock,
-          category: selectedCategory,
-          brand: selectedBrand || null,
-          images,
-          productType,
-          isFeatured: productType === "featured",
-          isActive: true,
-        }),
-      });
+      const res = await fetch(
+        `${API_URL}/admin/product/${product._id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            name,
+            price,
+            stock,
+            category: selectedCategory,
+            brand: selectedBrand || null, // ✅ BRAND ADDED
+            images,
+            productType,
+            isFeatured: productType === "featured",
+            isActive: true,
+          }),
+        }
+      );
 
-      if (!res.ok) throw new Error("Update failed");
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.message);
 
       alert("Product updated successfully");
       onBack();
@@ -130,65 +139,108 @@ const ProductEdit = ({ product, onBack }) => {
     <div className="admin-card">
       <h2>Edit Product</h2>
 
+      {/* NAME */}
       <div className="form-group">
         <label>Product Name</label>
-        <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
+        <input
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
       </div>
 
+      {/* PRICE */}
       <div className="form-group">
         <label>Price</label>
-        <input type="number" value={price} onChange={(e) => setPrice(e.target.value)} />
+        <input
+          type="number"
+          value={price}
+          onChange={(e) => setPrice(e.target.value)}
+        />
       </div>
 
+      {/* STOCK */}
       <div className="form-group">
         <label>Stock</label>
-        <input type="number" value={stock} onChange={(e) => setStock(e.target.value)} />
+        <input
+          type="number"
+          value={stock}
+          onChange={(e) => setStock(e.target.value)}
+        />
       </div>
 
+      {/* CATEGORY */}
       <div className="form-group">
         <label>Category</label>
-        <select value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)}>
+        <select
+          value={selectedCategory}
+          onChange={(e) =>
+            setSelectedCategory(e.target.value)
+          }
+        >
           <option value="">Select Category</option>
           {categories.map((cat) => (
-            <option key={cat._id} value={cat._id}>{cat.name}</option>
+            <option key={cat._id} value={cat._id}>
+              {cat.name}
+            </option>
           ))}
         </select>
       </div>
 
+      {/* BRAND (FIXED) */}
       <div className="form-group">
         <label>Brand</label>
-        <select value={selectedBrand} onChange={(e) => setSelectedBrand(e.target.value)}>
+        <select
+          value={selectedBrand}
+          onChange={(e) =>
+            setSelectedBrand(e.target.value)
+          }
+        >
           <option value="">Select Brand</option>
           {brands.map((b) => (
-            <option key={b._id} value={b._id}>{b.name}</option>
+            <option key={b._id} value={b._id}>
+              {b.name}
+            </option>
           ))}
         </select>
       </div>
+
+      {/* PRODUCT TYPE */}
       <div className="form-group">
         <label>Product Type</label>
         <select
           value={productType}
-          onChange={(e) => setProductType(e.target.value)}
+          onChange={(e) =>
+            setProductType(e.target.value)
+          }
         >
-          <option value="featured">Featured Product</option>
-          <option value="new">New Arrival Product</option>
+          <option value="featured">
+            Featured Product
+          </option>
+          <option value="new">New Product</option>
         </select>
       </div>
+
+      {/* IMAGES */}
       <div className="form-group">
         <label>Images</label>
-        <input type="file" multiple onChange={handleImageUpload} />
+        <input
+          type="file"
+          multiple
+          onChange={handleImageUpload}
+        />
+
         <div className="image-preview">
           {imagePreviews.map((url, index) => (
-            <div key={index} className="image-preview-item">
+            <div key={index}>
               <img
                 src={url}
-                alt="preview"
-                style={{ width: 60, height: 60, marginRight: 5 }}
+                width={60}
+                height={60}
               />
               <button
-                type="button"
-                className="image-remove-btn"
-                onClick={() => handleRemoveImage(index)}
+                onClick={() =>
+                  handleRemoveImage(index)
+                }
               >
                 ×
               </button>
@@ -197,10 +249,16 @@ const ProductEdit = ({ product, onBack }) => {
         </div>
       </div>
 
+      {/* ACTIONS */}
       <div className="form-actions">
-        <button className="btn-secondary" onClick={onBack}>⬅ Back</button>
-        <button className="btn-primary" onClick={handleUpdate} disabled={loading}>
-          {loading ? "Updating..." : "Update Product"}
+        <button onClick={onBack}>Back</button>
+        <button
+          onClick={handleUpdate}
+          disabled={loading}
+        >
+          {loading
+            ? "Updating..."
+            : "Update Product"}
         </button>
       </div>
     </div>

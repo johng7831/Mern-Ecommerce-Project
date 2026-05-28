@@ -21,6 +21,8 @@ import Toppicks from "./components/customer/Toppicks";
 import Promobanner from "./components/customer/Promobanner";
 import Collections from "./components/customer/Collections";
 import CollectionProducts from "./components/customer/CollectionProducts";
+import Mensproduct from "./components/customer/Mensproduct";
+
 
 function App() {
   return (
@@ -36,7 +38,7 @@ function App() {
               <>
                 <ImageBanner />
                 <Featuredcollecion/>
-                <Toppicks/>
+                 <Toppicks/>
                  <Collections/>
                  <Promobanner/>
                 
@@ -49,6 +51,7 @@ function App() {
          {/* =============Public Route Pages =============*/}
           <Route path="/product/:id" element={<ProductDetails />} />
           <Route path="/collection/:id"element={<CollectionProducts />}/> 
+          <Route path="/collection/:id"element={<Mensproduct />}/> 
           <Route path="/cart" element={<Cart />} />
           <Route path="/shop-product" element={<Shopproduct />} />
           <Route path="/checkout" element={<Checkout />}/>

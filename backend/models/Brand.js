@@ -8,10 +8,19 @@ const brandSchema = new mongoose.Schema(
       unique: true,
       trim: true,
     },
+
     description: {
       type: String,
       default: "",
     },
+
+    images: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Image",
+      },
+    ],
+
     isActive: {
       type: Boolean,
       default: true,

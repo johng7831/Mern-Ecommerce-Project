@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-
-const API_URL = "http://localhost:5001/api";
+import API_URL from "../../../api";
 
 const BrandShow = ({ onAdd, onEdit }) => {
   const [brands, setBrands] = useState([]);
@@ -19,17 +18,16 @@ const BrandShow = ({ onAdd, onEdit }) => {
         },
       });
 
-      // Check response first
       if (!response.ok) {
         throw new Error("Failed to fetch brands");
       }
 
-      const data = await response.json();
+      const result = await response.json();
 
-      console.log("Brands API Response:", data);
+      console.log("Brands API Response:", result);
 
-      // Set brands
-      setBrands(Array.isArray(data) ? data : []);
+      // API data array
+      setBrands(result.data || []);
     } catch (error) {
       console.error("Fetch Brand Error:", error);
       setBrands([]);
@@ -62,7 +60,7 @@ const BrandShow = ({ onAdd, onEdit }) => {
 
       alert("Brand deleted successfully");
 
-      // Refresh list
+      // Refresh brands
       fetchBrands();
     } catch (error) {
       console.error("Delete Error:", error);
@@ -80,6 +78,7 @@ const BrandShow = ({ onAdd, onEdit }) => {
       <h2 className="greeting">Brand Management</h2>
 
       <div className="page-content-card">
+
         {/* Header */}
         <div className="card-header">
           <h3>All Brands</h3>
@@ -97,7 +96,10 @@ const BrandShow = ({ onAdd, onEdit }) => {
             <table className="data-table">
               <thead>
                 <tr>
+                  <th>Image</th>
                   <th>Brand Name</th>
+                  <th>Description</th>
+                  <th>Status</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -106,8 +108,47 @@ const BrandShow = ({ onAdd, onEdit }) => {
                 {brands.length > 0 ? (
                   brands.map((brand) => (
                     <tr key={brand._id}>
+
+                      {/* Image */}
+                      <td>
+                        {brand.images &&
+                        brand.images.length > 0 ? (
+                          <img
+                            src={brand.images[0].url}
+                            alt={brand.name}
+                            width="60"
+                            height="60"
+                            style={{
+                              objectFit: "cover",
+                              borderRadius: "8px",
+                              border: "1px solid #ddd",
+                            }}
+                          />
+                        ) : (
+                          "No Image"
+                        )}
+                      </td>
+
+                      {/* Name */}
                       <td>{brand.name}</td>
 
+                      {/* Description */}
+                      <td>{brand.description || "-"}</td>
+
+                      {/* Status */}
+                      <td>
+                        {brand.isActive ? (
+                          <span style={{ color: "green" }}>
+                            Active
+                          </span>
+                        ) : (
+                          <span style={{ color: "red" }}>
+                            Inactive
+                          </span>
+                        )}
+                      </td>
+
+                      {/* Actions */}
                       <td>
                         <button
                           className="btn-edit"
@@ -118,7 +159,10 @@ const BrandShow = ({ onAdd, onEdit }) => {
 
                         <button
                           className="btn-delete"
-                          onClick={() => handleDelete(brand._id)}
+                          onClick={() =>
+                            handleDelete(brand._id)
+                          }
+                          style={{ marginLeft: "10px" }}
                         >
                           Delete
                         </button>
@@ -127,7 +171,10 @@ const BrandShow = ({ onAdd, onEdit }) => {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="2" style={{ textAlign: "center" }}>
+                    <td
+                      colSpan="5"
+                      style={{ textAlign: "center" }}
+                    >
                       No brands found
                     </td>
                   </tr>
@@ -136,6 +183,7 @@ const BrandShow = ({ onAdd, onEdit }) => {
             </table>
           )}
         </div>
+
       </div>
     </div>
   );
