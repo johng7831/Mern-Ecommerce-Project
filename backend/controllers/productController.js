@@ -278,3 +278,4 @@ exports.getCategoryProducts = async (req, res) => {
     });
   }
 };
+

@@ -22,7 +22,7 @@ import Promobanner from "./components/customer/Promobanner";
 import Collections from "./components/customer/Collections";
 import CollectionProducts from "./components/customer/CollectionProducts";
 import Mensproduct from "./components/customer/Mensproduct";
-
+import Brands from "./components/customer/Brands";
 
 function App() {
   return (
@@ -40,6 +40,7 @@ function App() {
                 <Featuredcollecion/>
                  <Toppicks/>
                  <Collections/>
+                 <Brands/>
                  <Promobanner/>
                 
                 {/* <FeaturedProducts /> */}
