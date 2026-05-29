@@ -1,97 +1,77 @@
-import React, { useContext } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { FaShoppingCart, FaRegUser } from "react-icons/fa";
+import axios from "axios";
+import API_URL from "../../api";
 import { AuthContext } from "../../context/AuthContext";
 import { CartContext } from "../../context/CartContext";
-import "../../user.css";
 
 const Header = () => {
   const { user, logout } = useContext(AuthContext);
   const { cartItems } = useContext(CartContext);
+  const [collections, setCollections] = useState([]);
   const navigate = useNavigate();
   const location = useLocation();
-
-  const cartCount = cartItems.reduce(
-    (n, item) => n + (item.quantity || 1),
-    0
-  );
-
-  const isAdmin = user?.role === "admin";
-
-  // 🔑 Detect dashboard pages
-  const isDashboardPage =
-    location.pathname.startsWith("/admin") ||
-    location.pathname.startsWith("/user");
+  const token = localStorage.getItem("token");
+  // FETCH ALL COLLECTIONS
+  useEffect(() => {
+    const fetchCollections = async () => {
+      try {
+        const res = await axios.get(
+          `${API_URL}/admin/collections`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        if (res.data.success) {
+          setCollections(res.data.data);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    fetchCollections();
+  }, []);
 
   const handleLogout = () => {
     logout();
     navigate("/");
   };
-
+  const isDashboardPage =
+    location.pathname.startsWith("/admin") ||
+    location.pathname.startsWith("/user");
   return (
     <header className="header">
       <div className="header-container">
-
-        {/* LOGO */}
         <Link to="/" className="logo">
           ShopEasy
         </Link>
         {!isDashboardPage && (
           <>
+            {/* NAV DYNAMIC */}
             <nav className="nav">
               <Link to="/">New In</Link>
-              <Link to="/collection/men">Men</Link>
-              <Link to="/shop-product">Women</Link>
-              <Link to="/">Shoes</Link>
+              {collections.map((col) => (
+                <Link key={col._id} to={`/collection/${col._id}`}>
+                  {col.collectionTitle}
+                </Link>
+              ))}
             </nav>
 
-
-
-           {/* AUTH (still visible everywhere unless you also want to hide it) */}
-        <div className="auth">
-          {user ? (
-            <>
-              <span className="username">Hi, {user.name}</span>
-              <button onClick={handleLogout} className="logout-btn">
-                Logout
-              </button>
-            </>
-          ) : (
-            <Link to="/login" className="login-link">
-              <FaRegUser className="nav-icon" />
-            </Link>
-          )}
-        </div>
-
-
-
-
-
-            {/* CART */}
-            <Link
-              to="/cart"
-              className="cart-link"
-              aria-label={`Shopping cart${
-                cartCount ? `, ${cartCount} items` : ", empty"
-              }`}
-            >
-              <span className="cart-wrapper">
-              <FaShoppingCart
-                className="nav-icon cart-nav-icon"
-                style={{ color: "white" }}
-              />
-                {cartCount > 0 && (
-                  <span className="cart-count">
-                    {cartCount > 99 ? "99+" : cartCount}
-                  </span>
-                )}
-              </span>
-            </Link>
+            {/* AUTH */}
+            <div className="auth">
+              {user ? (
+                <>
+                  <span>Hi, {user.name}</span>
+                  <button onClick={handleLogout}>Logout</button>
+                </>
+              ) : (
+                <Link to="/login">Login</Link>
+              )}
+            </div>
           </>
         )}
-
-       
-
       </div>
     </header>
   );
