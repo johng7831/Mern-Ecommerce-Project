@@ -279,3 +279,42 @@ exports.getCategoryProducts = async (req, res) => {
   }
 };
 
+
+// ===============================
+// GET PRODUCTS BY BRAND
+// ===============================
+exports.getBrandProducts = async (req, res) => {
+  try {
+    const { brand } = req.query;
+    if (!brand) {
+      return res.status(400).json({
+        success: false,
+        message: "Brand ID is required",
+      });
+    }
+    if (!mongoose.Types.ObjectId.isValid(brand)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid brand ID",
+      });
+    }
+    const products = await Product.find({
+      brand,
+      isActive: { $ne: false },
+    })
+      .populate("category", "name")
+      .populate("brand", "name")
+      .populate("images", "url")
+      .sort({ createdAt: -1 });
+    res.status(200).json({
+      success: true,
+      count: products.length,
+      data: products,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};

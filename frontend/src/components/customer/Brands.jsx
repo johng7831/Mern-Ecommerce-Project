@@ -5,12 +5,10 @@ import "../../user.css";
 const Brand = () => {
   const [brands, setBrands] = useState([]);
   const [loading, setLoading] = useState(true);
-
   // ================= FETCH ALL BRANDS =================
   const fetchBrands = async () => {
     try {
       const token = localStorage.getItem("token");
-
       const res = await fetch(`${API_URL}/admin/brands`, {
         method: "GET",
         headers: {
@@ -18,11 +16,8 @@ const Brand = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-
       const data = await res.json();
-
       console.log("Brands Response:", data);
-
       setBrands(data.data || []);
     } catch (error) {
       console.error("Error fetching brands:", error);
@@ -31,18 +26,15 @@ const Brand = () => {
       setLoading(false);
     }
   };
-
   useEffect(() => {
     fetchBrands();
   }, []);
-
   return (
     <div className="brands-section">
       {/* HEADING */}
       <div className="brands-header">
         <h2>All Brands</h2>
       </div>
-
       {/* LOADING */}
       {loading ? (
         <p className="brand-loading">Loading brands...</p>
@@ -68,12 +60,10 @@ const Brand = () => {
                     </div>
                   )}
                 </div>
-
                 {/* CONTENT */}
                 <div className="brand-content">
                   <h3>{brand.name}</h3>
                 </div>
-
               </div>
             ))
           )}

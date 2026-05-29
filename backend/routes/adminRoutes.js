@@ -44,6 +44,7 @@ const {
   getFeaturedProducts,
   getNewArrivalProducts,
   getCategoryProducts,
+  getBrandProducts,
 } = require("../controllers/productController");
 
 // ========================
@@ -104,7 +105,7 @@ router.get("/product/:id", protect, adminOnly, getProductById);
 router.put("/product/:id", protect, adminOnly, updateProduct);
 router.delete("/product/:id", protect, adminOnly, deleteProduct);
 router.get("/products-by-category",protect, adminOnly, getCategoryProducts);
-
+router.get("/products-by-brand", getBrandProducts);
 // ========================
 // ✅ Order Routes
 // ========================

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import API_URL from "../../api";
 import "../../user.css";
+import { useNavigate } from "react-router-dom";
 
 const Toppicks = () => {
   const [categories, setCategories] = useState([]);
@@ -9,6 +10,7 @@ const Toppicks = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
 
   const token = localStorage.getItem("token");
+  const navigate = useNavigate();
 
   // Fetch categories
   const fetchCategories = async () => {
@@ -55,6 +57,11 @@ const Toppicks = () => {
     fetchProductsByCategory(cat._id);
   };
 
+  // 👉 NEW: navigate to product page
+  const handleProductClick = (productId) => {
+    navigate(`/product/${productId}`);
+  };
+
   useEffect(() => {
     fetchCategories();
   }, []);
@@ -84,17 +91,17 @@ const Toppicks = () => {
       {/* PRODUCTS */}
       <div className="products-row">
         {products.map((product) => (
-          <div key={product._id} className="product-card">
-            
-            <img
-              src={product.images?.[0]?.url}
-              alt={product.name}
-            />
+          <div
+            key={product._id}
+            className="product-card"
+            onClick={() => handleProductClick(product._id)}
+            style={{ cursor: "pointer" }}
+          >
+            <img src={product.images?.[0]?.url} alt={product.name} />
 
             <p className="price">£{product.price}</p>
             <p className="brand">{product.brand?.name}</p>
             <p className="name">{product.name}</p>
-
           </div>
         ))}
       </div>
