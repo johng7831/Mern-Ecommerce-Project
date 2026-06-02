@@ -1,14 +1,18 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import API_URL from "../../api";
 import "../../user.css";
 
 const Brand = () => {
   const [brands, setBrands] = useState([]);
   const [loading, setLoading] = useState(true);
-  // ================= FETCH ALL BRANDS =================
+
+  const navigate = useNavigate();
+
   const fetchBrands = async () => {
     try {
       const token = localStorage.getItem("token");
+
       const res = await fetch(`${API_URL}/admin/brands`, {
         method: "GET",
         headers: {
@@ -16,8 +20,8 @@ const Brand = () => {
           Authorization: `Bearer ${token}`,
         },
       });
+
       const data = await res.json();
-      console.log("Brands Response:", data);
       setBrands(data.data || []);
     } catch (error) {
       console.error("Error fetching brands:", error);
@@ -26,16 +30,21 @@ const Brand = () => {
       setLoading(false);
     }
   };
+
   useEffect(() => {
     fetchBrands();
   }, []);
+
+  const handleBrandClick = (brandId) => {
+    navigate(`/brand/${brandId}`);
+  };
+
   return (
     <div className="brands-section">
-      {/* HEADING */}
       <div className="brands-header">
         <h2>All Brands</h2>
       </div>
-      {/* LOADING */}
+
       {loading ? (
         <p className="brand-loading">Loading brands...</p>
       ) : (
@@ -44,23 +53,24 @@ const Brand = () => {
             <p>No brands found</p>
           ) : (
             brands.map((brand) => (
-              <div key={brand._id} className="brand-card-new">
-                
-                {/* IMAGE */}
+              <div
+                key={brand._id}
+                className="brand-card-new"
+                onClick={() => handleBrandClick(brand._id)}
+                style={{ cursor: "pointer" }}
+              >
                 <div className="brand-image-wrapper">
-                  {brand.images && brand.images.length > 0 ? (
+                  {brand.images?.length > 0 ? (
                     <img
                       src={brand.images[0].url}
                       alt={brand.name}
                       className="brand-image"
                     />
                   ) : (
-                    <div className="brand-no-image">
-                      No Image
-                    </div>
+                    <div className="brand-no-image">No Image</div>
                   )}
                 </div>
-                {/* CONTENT */}
+
                 <div className="brand-content">
                   <h3>{brand.name}</h3>
                 </div>

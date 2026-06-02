@@ -8,21 +8,21 @@ import AdminDashboard from "./components/admin/AdminDashboard";
 import UserDashboard from "./components/customer/UserDashboard";
 import { AuthProvider } from "./context/AuthContext";
 import { AdminRoute, UserRoute } from "./utils/ProtectedRoutes";
-import FeaturedProducts from "./components/customer/Featuredproduct";
-import NewArrivals from "./components/customer/NewArrivalproduct";
+
 import ProductDetails from "./components/customer/product";
 import Cart from "./components/customer/Cart";
 import Footer from "./components/customer/Footer";
 import Shopproduct from "./components/customer/Shopproduct";
 import Checkout from "./components/customer/Checkout";
 import Thankyou from "./components/customer/Thankyou";
+
 import Featuredcollecion from "./components/customer/Featuredcollection";
 import Toppicks from "./components/customer/Toppicks";
 import Promobanner from "./components/customer/Promobanner";
 import Collections from "./components/customer/Collections";
 import CollectionProducts from "./components/customer/CollectionProducts";
-import Mensproduct from "./components/customer/Mensproduct";
 import Brands from "./components/customer/Brands";
+import BrandProducts from "./components/customer/BrandProducts";
 
 function App() {
   return (
@@ -31,40 +31,66 @@ function App() {
         <Header />
 
         <Routes>
-          {/* =============Home page sections =============*/}
+          {/* ================= HOME PAGE ================= */}
           <Route
             path="/"
             element={
               <>
                 <ImageBanner />
-                <Featuredcollecion/>
-                 <Toppicks/>
-                 <Collections/>
-                 <Brands/>
-                 <Promobanner/>
-                
-                {/* <FeaturedProducts /> */}
-                {/* <NewArrivals /> */}
+                <Featuredcollecion />
+                <Toppicks />
+                <Collections />
+                <Brands />
+                <Promobanner />
               </>
             }
           />
 
-         {/* =============Public Route Pages =============*/}
+          {/* ================= PUBLIC ROUTES ================= */}
+
+          {/* Product Details */}
           <Route path="/product/:id" element={<ProductDetails />} />
-          <Route path="/collection/:id"element={<CollectionProducts />}/> 
-          <Route path="/collection/:id"element={<Mensproduct />}/> 
+
+          {/* Collection Products */}
+          <Route
+            path="/collection/:id"
+            element={<CollectionProducts />}
+          />
+
+          {/* Brand Products */}
+          <Route
+            path="/brand/:brandId"
+            element={<BrandProducts />}
+          />
+
+          {/* Cart */}
           <Route path="/cart" element={<Cart />} />
-          <Route path="/shop-product" element={<Shopproduct />} />
-          <Route path="/checkout" element={<Checkout />}/>
-          <Route path="/thank-you" element={<Thankyou/>} />
 
+          {/* Shop */}
+          <Route
+            path="/shop-product"
+            element={<Shopproduct />}
+          />
 
-          {/* =============Customer Login Register  Pages =============*/}
+          {/* Checkout */}
+          <Route
+            path="/checkout"
+            element={<Checkout />}
+          />
+
+          {/* Thank You */}
+          <Route
+            path="/thank-you"
+            element={<Thankyou />}
+          />
+
+          {/* ================= AUTH ROUTES ================= */}
+
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/admin" element={<AdminLogin />} />
 
-
+          {/* ================= PROTECTED ROUTES ================= */}
 
           <Route
             path="/admin/dashboard"
@@ -74,6 +100,7 @@ function App() {
               </AdminRoute>
             }
           />
+
           <Route
             path="/user"
             element={
@@ -83,6 +110,7 @@ function App() {
             }
           />
         </Routes>
+
         <Footer />
       </Router>
     </AuthProvider>
