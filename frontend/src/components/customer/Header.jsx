@@ -10,14 +10,12 @@ import "../../user.css";
 
 const Header = () => {
   const { user, logout } = useContext(AuthContext);
-  const { cartItems } = useContext(CartContext);
+  const { cartItems = [] } = useContext(CartContext); // safe default
 
   const [collections, setCollections] = useState([]);
 
   const navigate = useNavigate();
   const location = useLocation();
-
-  const token = localStorage.getItem("token");
 
   const cartCount = cartItems.reduce(
     (n, item) => n + (item.quantity || 1),
@@ -32,25 +30,18 @@ const Header = () => {
   useEffect(() => {
     const fetchCollections = async () => {
       try {
-        const res = await axios.get(
-          `${API_URL}/admin/collections`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const res = await axios.get(`${API_URL}/collections`);
 
-        if (res.data.success) {
-          setCollections(res.data.data);
+        if (res.data?.success) {
+          setCollections(res.data.data || []);
         }
       } catch (err) {
-        console.log(err);
+        console.error("Failed to fetch collections:", err);
       }
     };
 
     fetchCollections();
-  }, []);
+  }, [API_URL]);
 
   const handleLogout = () => {
     logout();
@@ -80,7 +71,7 @@ const Header = () => {
               ))}
             </nav>
 
-            {/* AUTH (YOUR ORIGINAL CODE KEPT) */}
+            {/* AUTH */}
             <div className="auth">
               {user ? (
                 <>
@@ -96,13 +87,11 @@ const Header = () => {
               )}
             </div>
 
-            {/* CART (YOUR ORIGINAL CODE KEPT) */}
+            {/* CART */}
             <Link
               to="/cart"
               className="cart-link"
-              aria-label={`Shopping cart${
-                cartCount ? `, ${cartCount} items` : ", empty"
-              }`}
+              aria-label={`Shopping cart${cartCount ? `, ${cartCount} items` : ", empty"}`}
             >
               <span className="cart-wrapper">
                 <FaShoppingCart
