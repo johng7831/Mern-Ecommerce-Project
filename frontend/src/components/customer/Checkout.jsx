@@ -57,99 +57,173 @@ const Checkout = () => {
   // =========================
 
   const handlePlaceOrder = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    try {
-      setLoading(true);
+  try {
+    setLoading(true);
 
-      // Check cart
-      if (cartItems.length === 0) {
-        alert("Cart is empty");
-        setLoading(false);
-        return;
+    if (cartItems.length === 0) {
+      alert("Cart is empty");
+      return;
+    }
+
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      alert("Please login first");
+      navigate("/login");
+      return;
+    }
+
+    const orderData = {
+      fullName: shippingInfo.fullName,
+      email: shippingInfo.email,
+      phone: shippingInfo.phone,
+      address: shippingInfo.address,
+      city: shippingInfo.city,
+      state: shippingInfo.state,
+      zipCode: shippingInfo.zipCode,
+      country: shippingInfo.country,
+      paymentMethod: shippingInfo.paymentMethod,
+
+      items: cartItems.map((item) => ({
+        productId: item._id,
+        name: item.name,
+        price: item.price,
+        quantity: item.quantity || 1,
+      })),
+
+      subtotal: totals.subtotal,
+      shipping: totals.shipping,
+      tax: totals.tax,
+      total: totals.total,
+    };
+
+    // STEP 1: Save order in DB
+    const orderRes = await axios.post(
+      `${API_URL}/admin/order`,
+      orderData,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
       }
+    );
 
-      // Get token
-      const token = localStorage.getItem("token");
+    const createdOrder = orderRes.data.order;
 
-      console.log("TOKEN:", token);
-
-      // Check login
-      if (!token) {
-        alert("Please login first");
-        navigate("/login");
-        setLoading(false);
-        return;
-      }
-
-      // Order Data
-      const orderData = {
-        fullName: shippingInfo.fullName,
-        email: shippingInfo.email,
-        phone: shippingInfo.phone,
-        address: shippingInfo.address,
-        city: shippingInfo.city,
-        state: shippingInfo.state,
-        zipCode: shippingInfo.zipCode,
-        country: shippingInfo.country,
-        paymentMethod: shippingInfo.paymentMethod,
-
-        items: cartItems.map((item) => ({
-          productId: item._id,
-          name: item.name,
-          price: item.price,
-          quantity: item.quantity || 1,
-        })),
-
-        subtotal: totals.subtotal,
-        shipping: totals.shipping,
-        tax: totals.tax,
-        total: totals.total,
-      };
-
-      console.log("ORDER DATA:", orderData);
-
-      // =========================
-      // API CALL
-      // =========================
-
-       const res = await axios.post(
-        `${API_URL}/admin/order`,
-        orderData,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      console.log("ORDER SUCCESS:", res.data);
+    // =====================
+    // COD FLOW
+    // =====================
+    if (shippingInfo.paymentMethod === "COD") {
+      clearCart();
 
       alert("Order placed successfully");
 
-      clearCart();
-
       navigate("/thank-you", {
         state: {
-          order: res.data,
+          order: createdOrder,
         },
       });
-    } catch (error) {
-      console.log("FULL ERROR:", error);
 
-      console.log("ERROR RESPONSE:", error.response);
-
-      alert(
-        error.response?.data?.message ||
-          error.message ||
-          "Failed to place order"
-      );
-    } finally {
-      setLoading(false);
+      return;
     }
-  };
 
+    // =====================
+    // ONLINE PAYMENT FLOW
+    // =====================
+    const paymentRes = await axios.post(
+      `${API_URL}/payment/create-order`,
+      {
+        orderId: createdOrder._id,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    const options = {
+      key: paymentRes.data.key,
+      amount: paymentRes.data.amount,
+      currency: paymentRes.data.currency,
+      order_id: paymentRes.data.orderId,
+
+      name: "My Store",
+      description: "Order Payment",
+
+      prefill: {
+        name: shippingInfo.fullName,
+        email: shippingInfo.email,
+        contact: shippingInfo.phone,
+      },
+
+      handler: async function (response) {
+        try {
+          const verifyRes = await axios.post(
+            `${API_URL}/payment/verify`,
+            {
+              orderId: createdOrder._id,
+              razorpayOrderId: response.razorpay_order_id,
+              razorpayPaymentId: response.razorpay_payment_id,
+              razorpaySignature: response.razorpay_signature,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+
+          if (verifyRes.data.success) {
+            clearCart();
+
+            alert("Payment Successful");
+
+            navigate("/thank-you", {
+              state: {
+                order: verifyRes.data.order,
+              },
+            });
+          }
+        } catch (error) {
+          console.error("Verify Payment Error:", error);
+
+          alert(
+            error.response?.data?.message ||
+              "Payment verification failed"
+          );
+        }
+      },
+
+      modal: {
+        ondismiss: function () {
+          alert("Payment cancelled");
+        },
+      },
+
+      theme: {
+        color: "#3399cc",
+      },
+    };
+
+    const razorpay = new window.Razorpay(options);
+
+    razorpay.open();
+  } catch (error) {
+    console.error("Checkout Error:", error);
+
+    alert(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to place order"
+    );
+  } finally {
+    setLoading(false);
+  }
+};
 
   // =========================
   // EMPTY CART

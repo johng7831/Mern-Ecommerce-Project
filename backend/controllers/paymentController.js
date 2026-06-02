@@ -5,7 +5,7 @@ const crypto = require("crypto");
 const Order = require("../models/Order");
 
 // ==============================
-// ✅ Create Razorpay Order
+// Create Razorpay Order
 // ==============================
 const createRazorpayOrder = async (req, res) => {
   try {
@@ -18,7 +18,10 @@ const createRazorpayOrder = async (req, res) => {
       });
     }
 
-    const order = await Order.findById(orderId);
+    const order = await Order.findOne({
+      _id: orderId,
+      user: req.user._id,
+    });
 
     if (!order) {
       return res.status(404).json({
@@ -27,55 +30,97 @@ const createRazorpayOrder = async (req, res) => {
       });
     }
 
-    if (!order.total) {
+    if (!order.total || order.total <= 0) {
       return res.status(400).json({
         success: false,
-        message: "Order total missing",
+        message: "Invalid order amount",
+      });
+    }
+
+    if (order.paymentStatus === "paid") {
+      return res.status(400).json({
+        success: false,
+        message: "Order already paid",
       });
     }
 
     const options = {
-      amount: order.total * 100, // paisa
+      amount: Math.round(order.total * 100),
       currency: "INR",
-      receipt: `receipt_${orderId}`,
+      receipt: order._id.toString(),
     };
 
     const rzpOrder = await razorpay.orders.create(options);
 
-    // Save Razorpay Order ID
     order.razorpayOrderId = rzpOrder.id;
     await order.save();
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       orderId: rzpOrder.id,
       amount: rzpOrder.amount,
       currency: rzpOrder.currency,
       key: process.env.RAZORPAY_KEY_ID,
     });
-
   } catch (error) {
-    console.error("Razorpay Create Error:", error);
+    console.error("Create Order Error:", error);
 
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: error.message,
     });
   }
 };
 
-
 // ==============================
-// ✅ Verify Payment
+// Verify Payment
 // ==============================
 const verifyPayment = async (req, res) => {
   try {
     const {
+      orderId,
       razorpayOrderId,
       razorpayPaymentId,
       razorpaySignature,
-      orderId,
     } = req.body;
+
+    if (
+      !orderId ||
+      !razorpayOrderId ||
+      !razorpayPaymentId ||
+      !razorpaySignature
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing payment details",
+      });
+    }
+
+    const order = await Order.findOne({
+      _id: orderId,
+      user: req.user._id,
+    });
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
+    if (order.paymentStatus === "paid") {
+      return res.status(400).json({
+        success: false,
+        message: "Order already paid",
+      });
+    }
+
+    if (order.razorpayOrderId !== razorpayOrderId) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid Razorpay order ID",
+      });
+    }
 
     const generatedSignature = crypto
       .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
@@ -83,9 +128,8 @@ const verifyPayment = async (req, res) => {
       .digest("hex");
 
     if (generatedSignature !== razorpaySignature) {
-      await Order.findByIdAndUpdate(orderId, {
-        paymentStatus: "failed",
-      });
+      order.paymentStatus = "failed";
+      await order.save();
 
       return res.status(400).json({
         success: false,
@@ -93,8 +137,17 @@ const verifyPayment = async (req, res) => {
       });
     }
 
-    // ✅ Payment success
-    const order = await Order.findById(orderId);
+    // Verify payment with Razorpay
+    const payment = await razorpay.payments.fetch(
+      razorpayPaymentId
+    );
+
+    if (payment.status !== "captured") {
+      return res.status(400).json({
+        success: false,
+        message: "Payment not captured",
+      });
+    }
 
     order.paymentStatus = "paid";
     order.orderStatus = "confirmed";
@@ -103,16 +156,15 @@ const verifyPayment = async (req, res) => {
 
     await order.save();
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Payment verified successfully",
       order,
     });
-
   } catch (error) {
-    console.error("Verify Error:", error);
+    console.error("Verify Payment Error:", error);
 
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: error.message,
     });
