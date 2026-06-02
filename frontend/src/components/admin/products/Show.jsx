@@ -5,15 +5,14 @@ const ProductShow = ({ onAdd, onEdit }) => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // =========================================
+  // FETCH PRODUCTS (PUBLIC API)
+  // =========================================
   const fetchProducts = async () => {
     try {
-      const token = localStorage.getItem("token");
-      const res = await fetch(`${API_URL}/admin/products`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await fetch(`${API_URL}/products`);
       const data = await res.json();
 
-      // Normalize API response so products is always an array
       const normalizedProducts = Array.isArray(data)
         ? data
         : Array.isArray(data?.data)
@@ -28,15 +27,16 @@ const ProductShow = ({ onAdd, onEdit }) => {
     }
   };
 
-  // DELETE PRODUCT
+  // =========================================
+  // DELETE PRODUCT (⚠️ still admin operation)
+  // =========================================
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this product?")) return;
+    if (!window.confirm("Are you sure you want to delete this product?"))
+      return;
 
     try {
-      const token = localStorage.getItem("token");
-      const res = await fetch(`${API_URL}/admin/product/${id}`, {
+      const res = await fetch(`${API_URL}/product/${id}`, {
         method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (res.ok) {
@@ -56,6 +56,7 @@ const ProductShow = ({ onAdd, onEdit }) => {
   return (
     <>
       <h2 className="greeting">Product Management</h2>
+
       <div className="page-content-card">
         <div className="card-header">
           <h3>All Products</h3>
@@ -81,6 +82,7 @@ const ProductShow = ({ onAdd, onEdit }) => {
                   <th>Actions</th>
                 </tr>
               </thead>
+
               <tbody>
                 {products.length > 0 ? (
                   products.map((product) => {
@@ -88,6 +90,7 @@ const ProductShow = ({ onAdd, onEdit }) => {
                       product.images && product.images.length > 0
                         ? product.images[0]
                         : null;
+
                     const imageUrl = firstImage
                       ? firstImage.url ||
                         `${API_URL.replace("/api", "")}/uploads/${firstImage.filename}`
@@ -111,11 +114,13 @@ const ProductShow = ({ onAdd, onEdit }) => {
                             }}
                           />
                         </td>
+
                         <td>{product.name}</td>
                         <td>{product.category?.name || "—"}</td>
                         <td>{product.brand?.name || "—"}</td>
                         <td>₹{Number(product.price || 0).toLocaleString()}</td>
                         <td>{product.stock}</td>
+
                         <td>
                           {type === "featured"
                             ? "Featured"
@@ -123,10 +128,15 @@ const ProductShow = ({ onAdd, onEdit }) => {
                             ? "New Arrival"
                             : "Normal"}
                         </td>
+
                         <td>
-                          <button className="btn-edit" onClick={() => onEdit(product)}>
+                          <button
+                            className="btn-edit"
+                            onClick={() => onEdit(product)}
+                          >
                             Edit
                           </button>
+
                           <button
                             className="btn-delete"
                             onClick={() => handleDelete(product._id)}
@@ -140,7 +150,8 @@ const ProductShow = ({ onAdd, onEdit }) => {
                 ) : (
                   <tr>
                     <td colSpan="8" style={{ textAlign: "center" }}>
-                      No products available. Click "Add Product" to get started.
+                      No products available. Click "Add Product" to get
+                      started.
                     </td>
                   </tr>
                 )}

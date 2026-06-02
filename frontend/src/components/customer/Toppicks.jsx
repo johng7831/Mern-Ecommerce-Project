@@ -9,17 +9,18 @@ const Toppicks = () => {
   const [products, setProducts] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
 
-  const token = localStorage.getItem("token");
   const navigate = useNavigate();
 
-  // Fetch categories
+  // =========================
+  // Fetch categories (PUBLIC)
+  // =========================
   const fetchCategories = async () => {
     try {
-      const res = await axios.get(`${API_URL}/admin/categories`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await axios.get(`${API_URL}/categories`);
 
-      const filtered = res.data.filter(
+      const data = res.data.data || res.data; // safety for API response format
+
+      const filtered = data.filter(
         (cat) => cat.name === "Men" || cat.name === "Women's"
       );
 
@@ -36,14 +37,13 @@ const Toppicks = () => {
     }
   };
 
-  // Fetch products
+  // =========================
+  // Fetch products by category (PUBLIC)
+  // =========================
   const fetchProductsByCategory = async (id) => {
     try {
       const res = await axios.get(
-        `${API_URL}/admin/products-by-category?category=${id}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        `${API_URL}/products-by-category?category=${id}`
       );
 
       setProducts(res.data.data);
@@ -57,7 +57,6 @@ const Toppicks = () => {
     fetchProductsByCategory(cat._id);
   };
 
-  // 👉 NEW: navigate to product page
   const handleProductClick = (productId) => {
     navigate(`/product/${productId}`);
   };
@@ -68,7 +67,6 @@ const Toppicks = () => {
 
   return (
     <div className="toppicks">
-      
       {/* HEADER */}
       <div className="toppicks-header">
         <h2>Top Picks</h2>
@@ -98,14 +96,12 @@ const Toppicks = () => {
             style={{ cursor: "pointer" }}
           >
             <img src={product.images?.[0]?.url} alt={product.name} />
-
             <p className="price">£{product.price}</p>
             <p className="brand">{product.brand?.name}</p>
             <p className="name">{product.name}</p>
           </div>
         ))}
       </div>
-
     </div>
   );
 };

@@ -8,34 +8,21 @@ const Collections = () => {
   const [collections, setCollections] = useState([]);
   const navigate = useNavigate();
 
-  const token = localStorage.getItem("token");
-
   // =========================================
-  // FETCH COLLECTIONS
+  // FETCH COLLECTIONS (PUBLIC API)
   // =========================================
   const fetchCollections = async () => {
     try {
-      const res = await axios.get(
-        `${API_URL}/admin/collections`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const res = await axios.get(`${API_URL}/collections`);
 
       console.log(res.data);
 
-      // If API returns directly array
-      if (Array.isArray(res.data)) {
-        setCollections(res.data);
+      // API format: { success, data }
+      if (res.data?.success) {
+        setCollections(res.data.data || []);
+      } else {
+        setCollections([]);
       }
-
-      // If API returns { success, data }
-      else if (res.data.success) {
-        setCollections(res.data.data);
-      }
-
     } catch (error) {
       console.error(
         "Error fetching collections:",
@@ -49,7 +36,7 @@ const Collections = () => {
   }, []);
 
   // =========================================
-  // GO TO COLLECTION PRODUCTS PAGE
+  // NAVIGATE TO COLLECTION PAGE
   // =========================================
   const handleCollectionClick = (collectionId) => {
     navigate(`/collection/${collectionId}`);
@@ -67,7 +54,7 @@ const Collections = () => {
               onClick={() => handleCollectionClick(item._id)}
               style={{ cursor: "pointer" }}
             >
-              {/* COLLECTION IMAGE */}
+              {/* IMAGE */}
               <img
                 src={
                   item.images?.[0]?.url ||
@@ -80,10 +67,7 @@ const Collections = () => {
               {/* OVERLAY */}
               <div className="overlay">
                 <h3>{item.collectionTitle}</h3>
-
-                <button>
-                  Shop Now
-                </button>
+                <button>Shop Now</button>
               </div>
             </div>
           ))

@@ -11,13 +11,10 @@ const Brand = () => {
 
   const fetchBrands = async () => {
     try {
-      const token = localStorage.getItem("token");
-
-      const res = await fetch(`${API_URL}/admin/brands`, {
+      const res = await fetch(`${API_URL}/brands`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
       });
 

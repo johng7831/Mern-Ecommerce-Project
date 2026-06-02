@@ -8,19 +8,11 @@ const CollectionProducts = () => {
   const navigate = useNavigate();
 
   const [collection, setCollection] = useState(null);
-  const token = localStorage.getItem("token");
 
-  // FETCH SINGLE COLLECTION
+  // FETCH SINGLE COLLECTION (NO AUTH)
   const fetchCollection = async () => {
     try {
-      const res = await axios.get(
-        `${API_URL}/admin/collection/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const res = await axios.get(`${API_URL}/admin/collection/${id}`);
 
       console.log(res.data);
 
@@ -36,7 +28,6 @@ const CollectionProducts = () => {
     fetchCollection();
   }, [id]);
 
-  // 👉 NAVIGATE TO PRODUCT PAGE
   const handleProductClick = (productId) => {
     navigate(`/product/${productId}`);
   };
@@ -47,7 +38,6 @@ const CollectionProducts = () => {
 
   return (
     <div style={{ padding: "20px" }}>
-
       {/* COLLECTION TITLE */}
       <h1>{collection.collectionTitle}</h1>
       <p>{collection.description}</p>
@@ -72,7 +62,6 @@ const CollectionProducts = () => {
               cursor: "pointer",
             }}
           >
-            {/* PRODUCT IMAGE */}
             <img
               src={
                 product.images?.[0]?.url ||
@@ -87,7 +76,6 @@ const CollectionProducts = () => {
               }}
             />
 
-            {/* PRODUCT INFO */}
             <h3>{product.name}</h3>
             <p>£{product.price}</p>
           </div>

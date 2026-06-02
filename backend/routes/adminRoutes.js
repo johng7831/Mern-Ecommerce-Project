@@ -5,8 +5,6 @@ const { protect, adminOnly } = require("../middleware/authMiddleware");
 
 const {
   createCollection,
-  getAllCollections,
-  getCollectionById,
   updateCollection,
   deleteCollection,
 } = require("../controllers/collectionController");
@@ -16,7 +14,6 @@ const {
 // ========================
 const {
   createCategory,
-  getCategories,
   deleteCategory,
   updateCategory,
 } = require("../controllers/categoryController");
@@ -26,8 +23,6 @@ const {
 // ========================
 const {
   createBrand,
-  getBrands,
-  getBrandById,
   updateBrand,
   deleteBrand,
 } = require("../controllers/brandController");
@@ -43,8 +38,6 @@ const {
   deleteProduct,
   getFeaturedProducts,
   getNewArrivalProducts,
-  getCategoryProducts,
-  getBrandProducts,
 } = require("../controllers/productController");
 
 // ========================
@@ -73,17 +66,14 @@ router.get("/dashboard", protect, adminOnly, (req, res) => {
 // ========================
 // ✅ Collection Routes (Admin)
 // ========================
-router.post("/collection", protect, adminOnly, createCollection);
+router.post("/collection", protect, adminOnly, createCollection)
 router.put("/collection/:id", protect, adminOnly, updateCollection);
 router.delete("/collection/:id", protect, adminOnly, deleteCollection);
-router.get("/collections", protect, adminOnly, getAllCollections);
-router.get("/collection/:id", protect, adminOnly, getCollectionById);
 
 // ========================
 // ✅ Category Routes (Admin)
 // ========================
 router.post("/category", protect, adminOnly, createCategory);
-router.get("/categories", protect, adminOnly, getCategories);
 router.put("/category/:id", protect, adminOnly, updateCategory);
 router.delete("/category/:id", protect, adminOnly, deleteCategory);
 
@@ -91,8 +81,6 @@ router.delete("/category/:id", protect, adminOnly, deleteCategory);
 // ✅ Brand Routes (Admin)
 // ========================
 router.post("/brand", protect, adminOnly, createBrand);
-router.get("/brands", protect, adminOnly, getBrands);
-router.get("/brand/:id", protect, adminOnly, getBrandById);
 router.put("/brand/:id", protect, adminOnly, updateBrand);
 router.delete("/brand/:id", protect, adminOnly, deleteBrand);
 
@@ -100,12 +88,10 @@ router.delete("/brand/:id", protect, adminOnly, deleteBrand);
 // ✅ Product Routes (Admin)
 // ========================
 router.post("/product", protect, adminOnly, createProduct);
-router.get("/products", protect, adminOnly, getProducts);
 router.get("/product/:id", protect, adminOnly, getProductById);
 router.put("/product/:id", protect, adminOnly, updateProduct);
 router.delete("/product/:id", protect, adminOnly, deleteProduct);
-router.get("/products-by-category",protect, adminOnly, getCategoryProducts);
-router.get("/products-by-brand",protect, adminOnly, getBrandProducts);
+
 // ========================
 // ✅ Order Routes
 // ========================
