@@ -12,7 +12,7 @@ const CollectionProducts = () => {
   // FETCH SINGLE COLLECTION (NO AUTH)
   const fetchCollection = async () => {
     try {
-      const res = await axios.get(`${API_URL}/admin/collection/${id}`);
+      const res = await axios.get(`${API_URL}/collection/${id}`);
 
       console.log(res.data);
 

@@ -13,7 +13,7 @@ const BrandProducts = () => {
   const fetchBrandProducts = async () => {
     try {
       const res = await fetch(
-        `${API_URL}/admin/products-by-brand?brand=${brandId}`,
+        `${API_URL}/products-by-brand?brand=${brandId}`,
         {
           headers: {
             "Content-Type": "application/json",
