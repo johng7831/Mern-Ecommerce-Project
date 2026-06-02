@@ -1,23 +1,19 @@
 import React, { useEffect, useState } from "react";
 import API_URL from "../../../api";
 
-
 const CollectionShow = ({ onBack, onAdd, onEdit }) => {
   const [collections, setCollections] = useState([]);
   const [loading, setLoading] = useState(true);
 
   // =========================
-  // FETCH COLLECTIONS
+  // FETCH COLLECTIONS (NO AUTH)
   // =========================
   const fetchCollections = async () => {
     try {
-      const token = localStorage.getItem("token");
-
-      const res = await fetch(`${API_URL}/admin/collections`, {
+      const res = await fetch(`${API_URL}/collections`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
       });
 
@@ -37,7 +33,7 @@ const CollectionShow = ({ onBack, onAdd, onEdit }) => {
   };
 
   // =========================
-  // DELETE COLLECTION
+  // DELETE COLLECTION (NO AUTH)
   // =========================
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this collection?")) {
@@ -45,12 +41,10 @@ const CollectionShow = ({ onBack, onAdd, onEdit }) => {
     }
 
     try {
-      const token = localStorage.getItem("token");
-
-      const res = await fetch(`${API_URL}/admin/collection/${id}`, {
+      const res = await fetch(`${API_URL}/collection/${id}`, {
         method: "DELETE",
         headers: {
-          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
       });
 
@@ -116,21 +110,12 @@ const CollectionShow = ({ onBack, onAdd, onEdit }) => {
                 collections.map((col) => (
                   <tr key={col._id}>
                     <td>{col.collectionTitle}</td>
-
                     <td>{col.description}</td>
-
                     <td>{col.isActive ? "Active" : "Inactive"}</td>
 
-                    {/* ================= IMAGE FIX ================= */}
                     <td>
                       {col.images && col.images.length > 0 ? (
-                        <div
-                          style={{
-                            display: "flex",
-                            gap: "6px",
-                            flexWrap: "wrap",
-                          }}
-                        >
+                        <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
                           {col.images.map((img, index) => (
                             <img
                               key={index}
@@ -154,17 +139,11 @@ const CollectionShow = ({ onBack, onAdd, onEdit }) => {
                     </td>
 
                     <td>
-                      <button
-                        className="btn-edit"
-                        onClick={() => onEdit(col)}
-                      >
+                      <button className="btn-edit" onClick={() => onEdit(col)}>
                         Edit
                       </button>
 
-                      <button
-                        className="btn-delete"
-                        onClick={() => handleDelete(col._id)}
-                      >
+                      <button className="btn-delete" onClick={() => handleDelete(col._id)}>
                         Delete
                       </button>
                     </td>

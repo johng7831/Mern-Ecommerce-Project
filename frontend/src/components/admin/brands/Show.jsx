@@ -10,7 +10,7 @@ const BrandShow = ({ onAdd, onEdit }) => {
     try {
       const token = localStorage.getItem("token");
 
-      const response = await fetch(`${API_URL}/admin/brands`, {
+      const response = await fetch(`${API_URL}/brands`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -18,15 +18,14 @@ const BrandShow = ({ onAdd, onEdit }) => {
         },
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to fetch brands");
-      }
-
       const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "Failed to fetch brands");
+      }
 
       console.log("Brands API Response:", result);
 
-      // API data array
       setBrands(result.data || []);
     } catch (error) {
       console.error("Fetch Brand Error:", error);
@@ -54,17 +53,18 @@ const BrandShow = ({ onAdd, onEdit }) => {
         },
       });
 
+      const result = await response.json();
+
       if (!response.ok) {
-        throw new Error("Delete failed");
+        throw new Error(result.message || "Delete failed");
       }
 
       alert("Brand deleted successfully");
 
-      // Refresh brands
       fetchBrands();
     } catch (error) {
       console.error("Delete Error:", error);
-      alert("Failed to delete brand");
+      alert(error.message || "Failed to delete brand");
     }
   };
 
@@ -78,7 +78,6 @@ const BrandShow = ({ onAdd, onEdit }) => {
       <h2 className="greeting">Brand Management</h2>
 
       <div className="page-content-card">
-
         {/* Header */}
         <div className="card-header">
           <h3>All Brands</h3>
@@ -108,13 +107,11 @@ const BrandShow = ({ onAdd, onEdit }) => {
                 {brands.length > 0 ? (
                   brands.map((brand) => (
                     <tr key={brand._id}>
-
                       {/* Image */}
                       <td>
-                        {brand.images &&
-                        brand.images.length > 0 ? (
+                        {brand.images?.length > 0 && brand.images[0] ? (
                           <img
-                            src={brand.images[0].url}
+                            src={brand.images[0].url || brand.images[0]}
                             alt={brand.name}
                             width="60"
                             height="60"
@@ -138,13 +135,9 @@ const BrandShow = ({ onAdd, onEdit }) => {
                       {/* Status */}
                       <td>
                         {brand.isActive ? (
-                          <span style={{ color: "green" }}>
-                            Active
-                          </span>
+                          <span style={{ color: "green" }}>Active</span>
                         ) : (
-                          <span style={{ color: "red" }}>
-                            Inactive
-                          </span>
+                          <span style={{ color: "red" }}>Inactive</span>
                         )}
                       </td>
 
@@ -159,9 +152,7 @@ const BrandShow = ({ onAdd, onEdit }) => {
 
                         <button
                           className="btn-delete"
-                          onClick={() =>
-                            handleDelete(brand._id)
-                          }
+                          onClick={() => handleDelete(brand._id)}
                           style={{ marginLeft: "10px" }}
                         >
                           Delete
@@ -171,10 +162,7 @@ const BrandShow = ({ onAdd, onEdit }) => {
                   ))
                 ) : (
                   <tr>
-                    <td
-                      colSpan="5"
-                      style={{ textAlign: "center" }}
-                    >
+                    <td colSpan="5" style={{ textAlign: "center" }}>
                       No brands found
                     </td>
                   </tr>
@@ -183,7 +171,6 @@ const BrandShow = ({ onAdd, onEdit }) => {
             </table>
           )}
         </div>
-
       </div>
     </div>
   );
