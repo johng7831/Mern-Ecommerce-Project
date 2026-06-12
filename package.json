@@ -2,12 +2,12 @@
   "dependencies": {
     "crypto": "^1.0.1",
     "dotenv": "^17.4.2",
+    "lucide-react": "^1.18.0",
     "razorpay": "^2.9.6"
   },
   "name": "mern-ecommerce-project",
   "version": "1.0.0",
   "main": "index.js",
-  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
