@@ -262,38 +262,32 @@
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
-.login-form button {
+.login-form {
+  background: #ffffff;
+  padding: 3rem;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   width: 100%;
-  padding: 1rem;
-  /* Updated to a vibrant green gradient */
-  background: linear-gradient(135deg, #10ce6d 0%, #0eb861 100%);
-  color: #ffffff;
-  border: none;
-  border-radius: 8px;
-  font-size: 18px;
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(16, 206, 109, 0.2); /* Subtle green glow */
-  transition: all 0.3s ease;
-  margin-top: 0.5rem;
+  max-width: 500px; /* Adjusted slightly up to fit the inline labels comfortably */
+  animation: fadeIn 0.5s ease;
+  
+  /* Retains structural row layout from your mockup */
+  display: flex;
+  flex-direction: column;
+  gap: 18px; 
 }
 
-/* Hover effect to make it feel responsive */
-.login-form button:hover {
-  opacity: 0.95;
-  box-shadow: 0 6px 16px rgba(16, 206, 109, 0.3);
-  transform: translateY(-1px); /* Slight lift effect */
+/* --- Entry Animation Keyframes --- */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
-
-/* Disabled state for when the form is loading/submitting */
-.login-form button:disabled {
-  background: #cbd5e1;
-  color: #94a3b8;
-  cursor: not-allowed;
-  box-shadow: none;
-  transform: none;
-}
-
 
 .login-form button:hover:not(:disabled) {
   transform: translateY(-2px);
@@ -1038,30 +1032,6 @@
   padding: 50px 0;
 }
 
-.logout-btn {
-  width: 100%;
-  padding: 12px;
-  border: none;
-  border-radius: 10px;
-  background: #ff4d4f;
-  color: white;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-.logout-btn:hover {
-  background: #d9363e;
-}
-
-
-
-
-
-
-
-
 
 
 
@@ -1511,423 +1481,6 @@
     transition: none;
   }
 }
-
-
-
-/* ============================================================
-   Userorder.css  –  Orders Panel Styles
-   Prefixed "uo-" — inherits ud- CSS variables from parent.
-   ============================================================ */
-
-/* ── Fallback tokens (if loaded standalone) ── */
-:root {
-  --ud-body-bg:       #F7F8FC;
-  --ud-card-bg:       #FFFFFF;
-  --ud-border:        #E2E8F0;
-  --ud-accent:        #6366F1;
-  --ud-accent-light:  #EEF2FF;
-  --ud-text-primary:  #0F172A;
-  --ud-text-secondary:#64748B;
-  --ud-text-muted:    #94A3B8;
-  --ud-shadow-sm:     0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
-  --ud-shadow-md:     0 4px 12px rgba(0,0,0,.08);
-  --ud-radius-sm:     6px;
-  --ud-radius-md:     10px;
-  --ud-font:          'Inter', system-ui, sans-serif;
-}
-
-/* ============================================================
-   ROOT
-   ============================================================ */
-.uo-root {
-  font-family: var(--ud-font);
-}
-
-/* ── Section header ── */
-.uo-header {
-  display: flex;
-  align-items: baseline;
-  gap: 12px;
-  margin-bottom: 20px;
-}
-
-.uo-title {
-  font-size: 18px;
-  font-weight: 600;
-  color: var(--ud-text-primary);
-  letter-spacing: -.01em;
-}
-
-.uo-count {
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--ud-text-muted);
-  background: var(--ud-body-bg);
-  border: 1px solid var(--ud-border);
-  border-radius: 20px;
-  padding: 2px 10px;
-}
-
-/* ============================================================
-   CARD LIST
-   ============================================================ */
-.uo-list {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-/* ── Order card ── */
-.uo-card {
-  position: relative;
-  background: var(--ud-card-bg);
-  border: 1px solid var(--ud-border);
-  border-radius: var(--ud-radius-md);
-  overflow: hidden;
-  box-shadow: var(--ud-shadow-sm);
-  transition: box-shadow 200ms ease;
-}
-
-.uo-card:hover {
-  box-shadow: var(--ud-shadow-md);
-}
-
-/* Signature: left status strip */
-.uo-card-strip {
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 4px;
-  background: var(--status-color, #94A3B8);
-  border-radius: 0;
-}
-
-/* ── Card head ── */
-.uo-card-head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 18px 20px 14px 24px;
-}
-
-.uo-card-head-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.uo-order-icon {
-  width: 38px;
-  height: 38px;
-  border-radius: var(--ud-radius-sm);
-  background: var(--ud-body-bg);
-  border: 1px solid var(--ud-border);
-  display: grid;
-  place-items: center;
-  color: var(--ud-text-secondary);
-  flex-shrink: 0;
-}
-
-.uo-order-id {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: .08em;
-  color: var(--ud-text-muted);
-  text-transform: uppercase;
-  margin-bottom: 3px;
-}
-
-.uo-order-name {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--ud-text-primary);
-}
-
-.uo-card-head-right {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 6px;
-}
-
-/* Status badge */
-.uo-status-badge {
-  display: inline-block;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: .04em;
-  padding: 3px 10px;
-  border-radius: 20px;
-  white-space: nowrap;
-}
-
-.uo-order-total {
-  font-size: 17px;
-  font-weight: 700;
-  color: var(--ud-text-primary);
-  letter-spacing: -.02em;
-}
-
-/* ── Meta row ── */
-.uo-meta-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px 20px;
-  padding: 0 20px 14px 24px;
-  border-bottom: 1px solid var(--ud-border);
-}
-
-.uo-meta-item {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 12.5px;
-  color: var(--ud-text-secondary);
-}
-
-.uo-meta-item svg {
-  flex-shrink: 0;
-  color: var(--ud-text-muted);
-}
-
-/* ── Toggle button ── */
-.uo-toggle-btn {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  width: 100%;
-  padding: 10px 20px 10px 24px;
-  background: transparent;
-  border: none;
-  font-family: var(--ud-font);
-  font-size: 12.5px;
-  font-weight: 500;
-  color: var(--ud-accent);
-  cursor: pointer;
-  text-align: left;
-  transition: background 160ms ease;
-}
-
-.uo-toggle-btn:hover {
-  background: var(--ud-accent-light);
-}
-
-.uo-chevron {
-  margin-left: auto;
-  transition: transform 200ms ease;
-  color: var(--ud-accent);
-}
-
-.uo-chevron--open {
-  transform: rotate(180deg);
-}
-
-/* ── Items panel ── */
-.uo-items-wrap {
-  border-top: 1px solid var(--ud-border);
-  background: var(--ud-body-bg);
-  padding: 14px 20px 14px 24px;
-}
-
-.uo-items-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-bottom: 12px;
-}
-
-.uo-item-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.uo-item-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--ud-border);
-  flex-shrink: 0;
-}
-
-.uo-item-name {
-  flex: 1;
-  font-size: 13px;
-  color: var(--ud-text-primary);
-  font-weight: 500;
-}
-
-.uo-item-qty {
-  font-size: 12px;
-  color: var(--ud-text-muted);
-  font-weight: 500;
-  min-width: 32px;
-  text-align: right;
-}
-
-.uo-item-price {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--ud-text-primary);
-  min-width: 72px;
-  text-align: right;
-}
-
-/* Items footer */
-.uo-items-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-top: 10px;
-  border-top: 1px dashed var(--ud-border);
-}
-
-.uo-items-footer-label {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--ud-text-muted);
-  text-transform: uppercase;
-  letter-spacing: .06em;
-}
-
-.uo-items-footer-total {
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--ud-text-primary);
-  letter-spacing: -.01em;
-}
-
-/* ============================================================
-   STATE SCREENS  (loading / error / empty)
-   ============================================================ */
-.uo-state-wrap {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 64px 24px;
-  text-align: center;
-  gap: 10px;
-}
-
-.uo-state-icon {
-  width: 72px;
-  height: 72px;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  margin-bottom: 8px;
-}
-
-.uo-state-icon--loading {
-  background: var(--ud-accent-light);
-  color: var(--ud-accent);
-}
-
-.uo-state-icon--error {
-  background: #FEF2F2;
-  color: #EF4444;
-}
-
-.uo-state-icon--empty {
-  background: var(--ud-body-bg);
-  border: 1px solid var(--ud-border);
-  color: var(--ud-text-muted);
-}
-
-.uo-state-title {
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--ud-text-primary);
-}
-
-.uo-state-text {
-  font-size: 13.5px;
-  color: var(--ud-text-secondary);
-  max-width: 280px;
-}
-
-/* Spinner */
-@keyframes uo-spin {
-  to { transform: rotate(360deg); }
-}
-
-.uo-spin {
-  animation: uo-spin 1s linear infinite;
-}
-
-/* Retry button */
-.uo-retry-btn {
-  margin-top: 6px;
-  padding: 8px 20px;
-  border-radius: var(--ud-radius-sm);
-  border: 1px solid var(--ud-border);
-  background: var(--ud-card-bg);
-  font-family: var(--ud-font);
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--ud-text-primary);
-  cursor: pointer;
-  transition: background 160ms ease, border-color 160ms ease;
-}
-
-.uo-retry-btn:hover {
-  background: var(--ud-body-bg);
-  border-color: var(--ud-accent);
-  color: var(--ud-accent);
-}
-
-/* ============================================================
-   RESPONSIVE
-   ============================================================ */
-@media (max-width: 560px) {
-  .uo-card-head {
-    flex-direction: column;
-    gap: 10px;
-    padding: 16px 16px 12px 20px;
-  }
-
-  .uo-card-head-right {
-    flex-direction: row;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .uo-meta-row {
-    padding: 0 16px 12px 20px;
-  }
-
-  .uo-toggle-btn {
-    padding: 10px 16px 10px 20px;
-  }
-
-  .uo-items-wrap {
-    padding: 12px 16px 12px 20px;
-  }
-}
-
-/* ── Reduced motion ── */
-@media (prefers-reduced-motion: reduce) {
-  .uo-spin { animation: none; }
-  .uo-chevron,
-  .uo-toggle-btn,
-  .uo-card,
-  .uo-retry-btn { transition: none; }
-}
-
-
-
-
-
-
-
-
-
 /* ============================================================
    Userprofile.css  –  Profile Panel Styles
    Prefixed "up-" — inherits ud- CSS variables from parent.
@@ -2357,4 +1910,409 @@
   .up-save-btn,
   .up-avatar-edit,
   .up-pw-toggle { transition: none; }
+}
+/* ============================================================
+   Userorder.css  –  Orders Panel Styles
+   Prefixed "uo-" — inherits ud- CSS variables from parent.
+   ============================================================ */
+
+/* ── Fallback tokens (if loaded standalone) ── */
+:root {
+  --ud-body-bg:       #F7F8FC;
+  --ud-card-bg:       #FFFFFF;
+  --ud-border:        #E2E8F0;
+  --ud-accent:        #6366F1;
+  --ud-accent-light:  #EEF2FF;
+  --ud-text-primary:  #0F172A;
+  --ud-text-secondary:#64748B;
+  --ud-text-muted:    #94A3B8;
+  --ud-shadow-sm:     0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+  --ud-shadow-md:     0 4px 12px rgba(0,0,0,.08);
+  --ud-radius-sm:     6px;
+  --ud-radius-md:     10px;
+  --ud-font:          'Inter', system-ui, sans-serif;
+}
+
+/* ============================================================
+   ROOT
+   ============================================================ */
+.uo-root {
+  font-family: var(--ud-font);
+}
+
+/* ── Section header ── */
+.uo-header {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.uo-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--ud-text-primary);
+  letter-spacing: -.01em;
+}
+
+.uo-count {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ud-text-muted);
+  background: var(--ud-body-bg);
+  border: 1px solid var(--ud-border);
+  border-radius: 20px;
+  padding: 2px 10px;
+}
+
+/* ============================================================
+   CARD LIST
+   ============================================================ */
+.uo-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ── Order card ── */
+.uo-card {
+  position: relative;
+  background: var(--ud-card-bg);
+  border: 1px solid var(--ud-border);
+  border-radius: var(--ud-radius-md);
+  overflow: hidden;
+  box-shadow: var(--ud-shadow-sm);
+  transition: box-shadow 200ms ease;
+}
+
+.uo-card:hover {
+  box-shadow: var(--ud-shadow-md);
+}
+
+/* Signature: left status strip */
+.uo-card-strip {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: var(--status-color, #94A3B8);
+  border-radius: 0;
+}
+
+/* ── Card head ── */
+.uo-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px 20px 14px 24px;
+}
+
+.uo-card-head-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.uo-order-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--ud-radius-sm);
+  background: var(--ud-body-bg);
+  border: 1px solid var(--ud-border);
+  display: grid;
+  place-items: center;
+  color: var(--ud-text-secondary);
+  flex-shrink: 0;
+}
+
+.uo-order-id {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .08em;
+  color: var(--ud-text-muted);
+  text-transform: uppercase;
+  margin-bottom: 3px;
+}
+
+.uo-order-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ud-text-primary);
+}
+
+.uo-card-head-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+/* Status badge */
+.uo-status-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  padding: 3px 10px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+.uo-order-total {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--ud-text-primary);
+  letter-spacing: -.02em;
+}
+
+/* ── Meta row ── */
+.uo-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 20px;
+  padding: 0 20px 14px 24px;
+  border-bottom: 1px solid var(--ud-border);
+}
+
+.uo-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12.5px;
+  color: var(--ud-text-secondary);
+}
+
+.uo-meta-item svg {
+  flex-shrink: 0;
+  color: var(--ud-text-muted);
+}
+
+/* ── Toggle button ── */
+.uo-toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  width: 100%;
+  padding: 10px 20px 10px 24px;
+  background: transparent;
+  border: none;
+  font-family: var(--ud-font);
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--ud-accent);
+  cursor: pointer;
+  text-align: left;
+  transition: background 160ms ease;
+}
+
+.uo-toggle-btn:hover {
+  background: var(--ud-accent-light);
+}
+
+.uo-chevron {
+  margin-left: auto;
+  transition: transform 200ms ease;
+  color: var(--ud-accent);
+}
+
+.uo-chevron--open {
+  transform: rotate(180deg);
+}
+
+/* ── Items panel ── */
+.uo-items-wrap {
+  border-top: 1px solid var(--ud-border);
+  background: var(--ud-body-bg);
+  padding: 14px 20px 14px 24px;
+}
+
+.uo-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.uo-item-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.uo-item-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ud-border);
+  flex-shrink: 0;
+}
+
+.uo-item-name {
+  flex: 1;
+  font-size: 13px;
+  color: var(--ud-text-primary);
+  font-weight: 500;
+}
+
+.uo-item-qty {
+  font-size: 12px;
+  color: var(--ud-text-muted);
+  font-weight: 500;
+  min-width: 32px;
+  text-align: right;
+}
+
+.uo-item-price {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ud-text-primary);
+  min-width: 72px;
+  text-align: right;
+}
+
+/* Items footer */
+.uo-items-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 10px;
+  border-top: 1px dashed var(--ud-border);
+}
+
+.uo-items-footer-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ud-text-muted);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+
+.uo-items-footer-total {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ud-text-primary);
+  letter-spacing: -.01em;
+}
+
+/* ============================================================
+   STATE SCREENS  (loading / error / empty)
+   ============================================================ */
+.uo-state-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 64px 24px;
+  text-align: center;
+  gap: 10px;
+}
+
+.uo-state-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  margin-bottom: 8px;
+}
+
+.uo-state-icon--loading {
+  background: var(--ud-accent-light);
+  color: var(--ud-accent);
+}
+
+.uo-state-icon--error {
+  background: #FEF2F2;
+  color: #EF4444;
+}
+
+.uo-state-icon--empty {
+  background: var(--ud-body-bg);
+  border: 1px solid var(--ud-border);
+  color: var(--ud-text-muted);
+}
+
+.uo-state-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ud-text-primary);
+}
+
+.uo-state-text {
+  font-size: 13.5px;
+  color: var(--ud-text-secondary);
+  max-width: 280px;
+}
+
+/* Spinner */
+@keyframes uo-spin {
+  to { transform: rotate(360deg); }
+}
+
+.uo-spin {
+  animation: uo-spin 1s linear infinite;
+}
+
+/* Retry button */
+.uo-retry-btn {
+  margin-top: 6px;
+  padding: 8px 20px;
+  border-radius: var(--ud-radius-sm);
+  border: 1px solid var(--ud-border);
+  background: var(--ud-card-bg);
+  font-family: var(--ud-font);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ud-text-primary);
+  cursor: pointer;
+  transition: background 160ms ease, border-color 160ms ease;
+}
+
+.uo-retry-btn:hover {
+  background: var(--ud-body-bg);
+  border-color: var(--ud-accent);
+  color: var(--ud-accent);
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 560px) {
+  .uo-card-head {
+    flex-direction: column;
+    gap: 10px;
+    padding: 16px 16px 12px 20px;
+  }
+
+  .uo-card-head-right {
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .uo-meta-row {
+    padding: 0 16px 12px 20px;
+  }
+
+  .uo-toggle-btn {
+    padding: 10px 16px 10px 20px;
+  }
+
+  .uo-items-wrap {
+    padding: 12px 16px 12px 20px;
+  }
+}
+
+/* ── Reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  .uo-spin { animation: none; }
+  .uo-chevron,
+  .uo-toggle-btn,
+  .uo-card,
+  .uo-retry-btn { transition: none; }
 }

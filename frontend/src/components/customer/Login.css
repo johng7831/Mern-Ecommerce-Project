@@ -1,39 +1,32 @@
-/* Full-screen, No-scroll constraints */
-html, body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  overflow: hidden; /* Disables page scrolling */
-  background-color: #f4f6f9; /* Subtle off-white/light gray background backdrop from image */
-}
-
+/* Container Shell & Global Styling Defaults */
 .fullscreen-page-wrapper {
-  box-sizing: border-box;
-  width: 100%;
-  height: 100vh;
-  max-width: 1300px;
+  font-family: Arial, sans-serif;
+  color: #000000;
+  background-color: #ffffff;
+  padding: 20px 40px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 25px 40px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between; /* Evenly distributes header, form content, and footer */
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  color: #1e293b;
+  box-sizing: border-box;
 }
 
-/* Header Adjustments */
+/* --- Header & Breadcrumbs --- */
 .page-header-section {
-  flex-shrink: 0;
+  margin-bottom: 25px;
 }
 
 .breadcrumb {
   font-size: 13px;
+  color: #000000;
   margin-bottom: 15px;
 }
 
 .breadcrumb a {
-  color: #333333;
+  color: #000000;
   text-decoration: none;
+}
+
+.breadcrumb a:hover {
+  text-decoration: underline;
 }
 
 .breadcrumb span {
@@ -41,212 +34,195 @@ html, body {
   color: #999999;
 }
 
-.breadcrumb .current {
-  color: #000000;
-  font-weight: bold;
-}
-
 .page-title {
-  font-size: 36px;
-  color: #1a365d; /* Deeper steel blue tone */
+  font-size: 26px;
   font-weight: 700;
-  margin: 10px 0;
+  margin: 0 0 15px 0;
 }
 
 .title-divider {
   border: 0;
-  border-top: 1px solid #e2e8f0;
+  border-top: 1px solid #e5e5e5;
   margin: 0;
 }
 
-/* Main Workspace Flex Grid */
+/* --- Core Split Screen Grid --- */
 .login-main-container {
   display: flex;
+  justify-content: space-between;
   gap: 50px;
-  flex: 1; /* Automatically scales inside the screen container boundaries */
-  align-items: center; /* Vertically centers the two sections */
-  min-height: 0; /* Critical for dynamic scaling preventions */
+  margin-top: 30px;
+  align-items: flex-start;
 }
 
 .login-column-left {
   flex: 1.1;
-  display: flex;
-  flex-direction: column;
 }
 
 .login-column-right {
   flex: 0.9;
-  display: flex;
-  flex-direction: column;
-  height: 80%; /* Aligns visually with the left side card constraints */
 }
 
 .section-heading {
-  font-size: 18px;
-  font-weight: 700;
-  color: #000000;
-  margin-bottom: 15px;
-  text-transform: none;
+  font-size: 16px;
+  font-weight: bold;
+  margin-top: 0;
+  margin-bottom: 25px;
 }
 
-/* Left Card Visual Styles from image_87ffd8.png */
-.login-card-visual {
-  background-color: #ffffff;
-  border-radius: 12px;
-  padding: 40px 35px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
-}
-
+/* --- Row-based Form Fields (Side-by-Side Setup) --- */
 .login-form {
   display: flex;
   flex-direction: column;
-  gap: 25px;
+  gap: 18px;
 }
 
-/* Centered & Stacked Label / Input configurations */
-.form-group-stacked {
+.form-row-inline {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 12px;
   width: 100%;
 }
 
-.form-group-stacked label {
-  font-size: 12px;
-  font-weight: 600;
-  color: #556270;
-  letter-spacing: 0.05em;
-  text-align: center;
+.form-label-left {
+  font-size: 13px;
+  color: #000000;
+  width: 130px; /* Forces label width to align inputs perfectly */
+  flex-shrink: 0;
 }
 
-.form-group-stacked input {
-  width: 85%; /* Sits cleanly inside the card bounded box */
-  max-width: 360px;
-  padding: 14px 18px;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  background-color: #edf2f9; /* Soft light-blue/gray input fill color */
-  font-size: 14px;
-  color: #333333;
+.form-input-right {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid #cccccc;
+  font-size: 15px;
   outline: none;
+  border-radius: 0; /* Boxy aesthetic from screenshot */
+  height: 40px;
   box-sizing: border-box;
-  text-align: left;
 }
 
-.form-group-stacked input:focus {
-  border-color: #10ce6d;
-  background-color: #ffffff;
+.form-input-right:focus {
+  border-color: #000000;
 }
 
-/* Green Gradient Buttons configured from your instructions */
-.primary-green-gradient-btn {
-  background: linear-gradient(135deg, #10ce6d 0%, #0eb861 100%);
-  color: #ffffff;
-  border: none;
-  padding: 14px 20px;
-  font-size: 16px;
-  font-weight: 600;
-  border-radius: 8px;
-  cursor: pointer;
-  width: 85%;
-  max-width: 360px;
-  margin: 10px auto 0 auto; /* Centers the button layout natively */
-  text-align: center;
-  box-sizing: border-box;
-  box-shadow: 0 4px 12px rgba(16, 206, 109, 0.2);
-  transition: opacity 0.2s ease;
-}
-
-.primary-green-gradient-btn:hover {
-  opacity: 0.95;
-}
-
-.primary-green-gradient-btn:disabled {
-  background: #cbd5e1;
-  color: #94a3b8;
-  cursor: not-allowed;
-  box-shadow: none;
-}
-
-/* Right Column - Info Panel Elements */
-.new-customer-box {
-  background-color: transparent; /* Changed layout style to match clean look */
-  padding: 20px 10px;
+/* Form Actions (Button and Subtext positioning) */
+.form-actions-wrapper {
+  padding-left: 130px; /* Matches label width to align elements precisely below input boxes */
   display: flex;
   flex-direction: column;
-  height: 100%;
-  justify-content: center;
+  gap: 15px;
+}
+
+/* --- Flat Vibrant Green Buttons --- */
+.primary-green-btn {
+  display: block;
+  background-color: #10cf6b; /* Solid flat signature green */
+  color: #000000;
+  border: none;
+  font-size: 16px;
+  font-weight: normal;
+  padding: 14px;
+  cursor: pointer;
+  width: 100%;
+  text-align: center;
+  text-decoration: none;
+  box-sizing: border-box;
+  border-radius: 0;
+}
+
+.primary-green-btn:hover {
+  background-color: #0ebd5f;
+}
+
+.primary-green-btn:disabled {
+  background-color: #a2ebd0;
+  cursor: not-allowed;
+}
+
+/* --- Forgotten Password link --- */
+.forgotten-password-link {
+  text-align: center;
+}
+
+.forgotten-password-link a {
+  font-size: 13px;
+  color: #000000;
+  text-decoration: underline;
+}
+
+/* --- Right Box Customisations --- */
+.new-customer-box {
+  border: 1px solid #e5e5e5;
+  padding: 30px;
+  background-color: #ffffff;
+  box-sizing: border-box;
+}
+
+.new-customer-box .section-heading {
+  font-size: 16px;
+  margin-bottom: 20px;
 }
 
 .benefits-list {
   list-style: none;
   padding: 0;
-  margin: 0 0 30px 0;
+  margin: 0 0 35px 0;
 }
 
 .benefits-list li {
-  font-size: 14px;
-  line-height: 1.6;
-  margin-bottom: 12px;
-  color: #334155;
-  position: relative;
+  font-size: 13px;
+  color: #000000;
+  line-height: 1.5;
+  margin-bottom: 5px;
 }
 
 .register-btn-link {
-  text-decoration: none;
-  margin: 0; /* Alignment optimization */
-  width: 100%;
-  max-width: 100%;
+  display: block;
 }
 
-/* Error Element Display wrapper */
-.error-message {
-  background-color: #fff1f2;
-  border: 1px solid #ffe4e6;
-  color: #e11d48;
-  padding: 12px;
-  border-radius: 6px;
-  font-size: 13px;
-  text-align: center;
-}
-
-/* Privacy Text Footer Area */
+/* --- Privacy Notice Footer --- */
 .page-footer-section {
-  flex-shrink: 0;
-  padding-top: 10px;
+  margin-top: 60px;
+  border-top: none;
 }
 
 .privacy-notice {
   font-size: 13px;
-  color: #64748b;
-  margin: 0;
+  color: #000000;
 }
 
 .privacy-notice a {
   color: #000000;
   text-decoration: underline;
-  font-weight: 500;
 }
 
-/* Adaptive breakpoint viewport correction rules */
+/* Error Alert Formatting */
+.error-message {
+  background-color: #fff1f0;
+  border: 1px solid #ffa39e;
+  padding: 10px;
+  font-size: 14px;
+  color: #cf1322;
+  margin-left: 130px;
+}
+
+/* Responsive collapse for small devices/tablets */
 @media (max-width: 850px) {
-  html, body {
-    overflow: auto; /* Allow fallback scrolling on smaller device screens */
-    height: auto;
-  }
-  .fullscreen-page-wrapper {
-    height: auto;
-    padding: 20px;
-  }
   .login-main-container {
     flex-direction: column;
     gap: 40px;
-    margin-top: 20px;
   }
-  .form-group-stacked input,
-  .primary-green-gradient-btn {
+  .form-row-inline {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+  .form-label-left {
     width: 100%;
-    max-width: 100%;
+  }
+  .form-actions-wrapper,
+  .error-message {
+    padding-left: 0;
+    margin-left: 0;
   }
 }

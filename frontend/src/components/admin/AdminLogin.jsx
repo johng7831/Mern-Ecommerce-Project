@@ -7,7 +7,7 @@ import API_URL from "../../api";
 const AdminLogin = () => {
   const navigate = useNavigate();
   const { login } = useContext(AuthContext);
-
+  
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -29,27 +29,28 @@ const AdminLogin = () => {
       try {
         data = await res.json();
       } catch {
-        // Backend may return non-JSON on unexpected failures.
+        // Fallback for non-JSON or raw text errors from server
       }
 
       if (!res.ok) {
-        setError(data?.message || "Login failed");
+        setError(data?.message || "Invalid credentials. Please try again.");
+        setLoading(false); // Make sure to turn off loading on error
         return;
       }
 
-      // Check if user is admin
-      if (data.user.role !== "admin") {
+      // Role authorization check
+      if (data?.user?.role !== "admin") {
         setError("Access denied. Admin credentials required.");
-        setLoading(false);
+        setLoading(false); 
         return;
       }
 
+      // Success path
       localStorage.setItem("token", data.token);
       login(data.user);
       navigate("/admin/dashboard");
     } catch (err) {
       setError(err.message || "Unable to connect to server. Please try again.");
-    } finally {
       setLoading(false);
     }
   };
@@ -58,23 +59,30 @@ const AdminLogin = () => {
     <div className="admin-login-container">
       <div className="admin-login-card">
         <div className="admin-login-header">
-          <h1>Admin Login</h1>
-          <p>Enter your admin credentials to access the dashboard</p>
+          <div className="admin-logo-badge">Secure Console</div>
+          <h1>Admin Portal</h1>
+          <p>Provide your administrator credentials to access the management network.</p>
         </div>
 
         <form onSubmit={handleSubmit} className="admin-login-form">
-          {error && <div className="error-message">{error}</div>}
+          {error && (
+            <div className="error-message">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+              <span>{error}</span>
+            </div>
+          )}
 
           <div className="form-group">
             <label htmlFor="email">Email Address</label>
             <input
               id="email"
               type="email"
-              placeholder="admin@example.com"
+              placeholder="name@company.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
               disabled={loading}
+              autoComplete="email"
             />
           </div>
 
@@ -83,22 +91,30 @@ const AdminLogin = () => {
             <input
               id="password"
               type="password"
-              placeholder="Enter your password"
+              placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
               disabled={loading}
+              autoComplete="current-password"
             />
           </div>
 
           <button type="submit" className="admin-login-btn" disabled={loading}>
-            {loading ? "Logging in..." : "Login as Admin"}
+            {loading ? (
+              <span className="spinner-container">
+                <span className="btn-spinner"></span>
+                Processing...
+              </span>
+            ) : (
+              "Authenticate"
+            )}
           </button>
         </form>
 
         <div className="admin-login-footer">
           <p>
-            Not an admin? <Link to="/login">User Login</Link>
+            Standard User? <Link to="/login" className="footer-link">Return to User Login</Link>
           </p>
         </div>
       </div>
@@ -107,4 +123,3 @@ const AdminLogin = () => {
 };
 
 export default AdminLogin;
-

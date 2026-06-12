@@ -69,7 +69,7 @@ const Login = () => {
       {/* Main Two-Column Viewport Area */}
       <div className="login-main-container">
         
-        {/* Left Column: Existing Customers Card */}
+        {/* Left Column: Existing Customers */}
         <div className="login-column-left">
           <h2 className="section-heading">Existing Customers</h2>
           
@@ -77,51 +77,58 @@ const Login = () => {
             <form onSubmit={handleSubmit} className="login-form">
               {error && <div className="error-message">{error}</div>}
 
-              <div className="form-group-stacked">
-                <label htmlFor="email">EMAIL ADDRESS *</label>
+              {/* Updated class names for row-based alignment */}
+              <div className="form-row-inline">
+                <label htmlFor="email" className="form-label-left">Email address *</label>
                 <input
                   id="email"
                   type="email"
+                  className="form-input-right"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   disabled={loading}
-                  placeholder="user@gmail.com"
                 />
               </div>
 
-              <div className="form-group-stacked">
-                <label htmlFor="password">PASSWORD *</label>
+              <div className="form-row-inline">
+                <label htmlFor="password" className="form-label-left">Password *</label>
                 <input
                   id="password"
                   type="password"
+                  className="form-input-right"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   disabled={loading}
-                  placeholder="••••••••"
                 />
               </div>
 
-              <button type="submit" className="primary-green-gradient-btn" disabled={loading}>
-                {loading ? "Signing in..." : "Sign In"}
-              </button>
+              {/* Action container to push button/link to the right */}
+              <div className="form-actions-wrapper">
+                <button type="submit" className="primary-green-btn" disabled={loading}>
+                  {loading ? "Signing in..." : "Sign In"}
+                </button>
+                <div className="forgotten-password-link">
+                  <Link to="/forgot-password">Forgotten your password?</Link>
+                </div>
+              </div>
             </form>
           </div>
         </div>
 
-        {/* Right Column: New to us Box */}
+        {/* Right Column: New Customer Box */}
         <div className="login-column-right">
           <div className="new-customer-box">
             <h2 className="section-heading">New to us?</h2>
             <ul className="benefits-list">
               <li>Get our latest product recommendations for you.</li>
-              <li>Personalize your experience on mobile, tablet and desktop.</li>
+              <li>Personalise your experience on mobile, tablet and desktop.</li>
               <li>Manage your orders and preferences.</li>
               <li>Access your saved items.</li>
               <li>Create and share gift lists.</li>
             </ul>
-            <Link to="/register" className="primary-green-gradient-btn register-btn-link">
+            <Link to="/register" className="primary-green-btn register-btn-link">
               Register for an account
             </Link>
           </div>

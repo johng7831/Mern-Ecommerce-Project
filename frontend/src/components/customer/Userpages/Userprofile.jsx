@@ -3,7 +3,6 @@ import axios from "axios";
 import API_URL from "../../../api";
 import { AuthContext } from "../../../context/AuthContext";
 
-
 /* ── Inline SVG Icons ── */
 const IconUser = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -26,17 +25,6 @@ const IconMapPin = () => (
     <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
   </svg>
 );
-const IconLock = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-  </svg>
-);
-const IconEdit = () => (
-  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-  </svg>
-);
 const IconSave = () => (
   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/>
@@ -52,18 +40,6 @@ const IconCheck = () => (
     <polyline points="20 6 9 17 4 12"/>
   </svg>
 );
-const IconEye = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
-  </svg>
-);
-const IconEyeOff = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
-    <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
-    <line x1="1" y1="1" x2="23" y2="23"/>
-  </svg>
-);
 
 /* ── Avatar initials helper ── */
 const getInitials = (name = "") =>
@@ -76,15 +52,9 @@ const Userprofile = () => {
   const [profile, setProfile] = useState({
     fullName: "", email: "", phone: "", address: "",
   });
-  const [passwords, setPasswords] = useState({
-    current: "", newPass: "", confirm: "",
-  });
-  const [showPw, setShowPw] = useState({ current: false, newPass: false, confirm: false });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [pwSaving, setPwSaving] = useState(false);
   const [toast, setToast] = useState(null); // { msg, type: 'success'|'error' }
-  const [activeTab, setActiveTab] = useState("info");
 
   /* ── Fetch profile ── */
   useEffect(() => {
@@ -133,41 +103,9 @@ const Userprofile = () => {
     }
   };
 
-  /* ── Change password ── */
-  const handleChangePassword = async (e) => {
-    e.preventDefault();
-    if (passwords.newPass !== passwords.confirm) {
-      showToast("New passwords do not match.", "error");
-      return;
-    }
-    if (passwords.newPass.length < 6) {
-      showToast("Password must be at least 6 characters.", "error");
-      return;
-    }
-    setPwSaving(true);
-    try {
-      const token = localStorage.getItem("token");
-      await axios.put(
-        `${API_URL}/user/change-password`,
-        { currentPassword: passwords.current, newPassword: passwords.newPass },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      showToast("Password changed successfully.", "success");
-      setPasswords({ current: "", newPass: "", confirm: "" });
-    } catch (err) {
-      showToast(err?.response?.data?.message ?? "Failed to change password.", "error");
-    } finally {
-      setPwSaving(false);
-    }
-  };
-
   /* ── Field change ── */
   const onProfileChange = (e) =>
     setProfile((p) => ({ ...p, [e.target.name]: e.target.value }));
-  const onPwChange = (e) =>
-    setPasswords((p) => ({ ...p, [e.target.name]: e.target.value }));
-  const togglePw = (field) =>
-    setShowPw((p) => ({ ...p, [field]: !p[field] }));
 
   if (loading) return (
     <div className="up-state-wrap">
@@ -176,8 +114,9 @@ const Userprofile = () => {
     </div>
   );
 
-  return (
-    <div className="up-root">
+return (
+    // Added a fallback style directly to the container to secure full width and overflow visibility
+    <div className="up-root" style={{ width: "100%", minHeight: "100vh", overflow: "visible" }}>
 
       {/* ── Toast ── */}
       {toast && (
@@ -188,7 +127,7 @@ const Userprofile = () => {
       )}
 
       {/* ── Profile hero ── */}
-      <div className="up-hero">
+      <div className="up-hero" style={{ width: "100%" }}>
         <div className="up-avatar-wrap">
           <div className="up-avatar">
             <span className="up-avatar-initials">{getInitials(profile.fullName) || "U"}</span>
@@ -203,134 +142,76 @@ const Userprofile = () => {
         </div>
       </div>
 
-      {/* ── Tabs ── */}
-      <div className="up-tabs">
-        <button
-          className={`up-tab${activeTab === "info" ? " up-tab--active" : ""}`}
-          onClick={() => setActiveTab("info")}
-        >
-          <IconUser /> Personal Info
-        </button>
-        <button
-          className={`up-tab${activeTab === "password" ? " up-tab--active" : ""}`}
-          onClick={() => setActiveTab("password")}
-        >
-          <IconLock /> Change Password
-        </button>
-      </div>
+      {/* ── Personal Info Form ── */}
+      {/* Forcing standard box layout blocks to fill parent space safely */}
+      <form className="up-form" onSubmit={handleSaveProfile} style={{ width: "100%", display: "block" }}>
+        <div className="up-form-grid">
 
-      {/* ── Personal Info Tab ── */}
-      {activeTab === "info" && (
-        <form className="up-form" onSubmit={handleSaveProfile}>
-          <div className="up-form-grid">
-
-            <div className="up-field">
-              <label className="up-label" htmlFor="fullName">Full Name</label>
-              <div className="up-input-wrap">
-                <span className="up-input-icon"><IconUser /></span>
-                <input
-                  id="fullName" name="fullName" type="text"
-                  className="up-input" placeholder="John Doe"
-                  value={profile.fullName} onChange={onProfileChange}
-                />
-              </div>
+          <div className="up-field">
+            <label className="up-label" htmlFor="fullName">Full Name</label>
+            <div className="up-input-wrap">
+              <span className="up-input-icon"><IconUser /></span>
+              <input
+                id="fullName" name="fullName" type="text"
+                className="up-input" placeholder="John Doe"
+                style={{ width: "100%" }}
+                value={profile.fullName} onChange={onProfileChange}
+              />
             </div>
-
-            <div className="up-field">
-              <label className="up-label" htmlFor="email">Email Address</label>
-              <div className="up-input-wrap">
-                <span className="up-input-icon"><IconMail /></span>
-                <input
-                  id="email" name="email" type="email"
-                  className="up-input" placeholder="you@example.com"
-                  value={profile.email} onChange={onProfileChange}
-                />
-              </div>
-            </div>
-
-            <div className="up-field">
-              <label className="up-label" htmlFor="phone">Phone Number</label>
-              <div className="up-input-wrap">
-                <span className="up-input-icon"><IconPhone /></span>
-                <input
-                  id="phone" name="phone" type="tel"
-                  className="up-input" placeholder="+91 98765 43210"
-                  value={profile.phone} onChange={onProfileChange}
-                />
-              </div>
-            </div>
-
-            <div className="up-field up-field--full">
-              <label className="up-label" htmlFor="address">Delivery Address</label>
-              <div className="up-input-wrap">
-                <span className="up-input-icon up-input-icon--top"><IconMapPin /></span>
-                <textarea
-                  id="address" name="address"
-                  className="up-input up-textarea" placeholder="Street, City, State, PIN"
-                  rows={3} value={profile.address} onChange={onProfileChange}
-                />
-              </div>
-            </div>
-
           </div>
 
-          <div className="up-form-footer">
-            <button type="submit" className="up-save-btn" disabled={saving}>
-              {saving ? <span className="up-btn-spinner" /> : <IconSave />}
-              {saving ? "Saving…" : "Save changes"}
-            </button>
-          </div>
-        </form>
-      )}
-
-      {/* ── Password Tab ── */}
-      {activeTab === "password" && (
-        <form className="up-form" onSubmit={handleChangePassword}>
-          <div className="up-form-grid up-form-grid--single">
-
-            {[
-              { id: "current",  label: "Current Password",  placeholder: "Enter current password" },
-              { id: "newPass",  label: "New Password",       placeholder: "Min. 6 characters" },
-              { id: "confirm",  label: "Confirm New Password", placeholder: "Repeat new password" },
-            ].map(({ id, label, placeholder }) => (
-              <div className="up-field" key={id}>
-                <label className="up-label" htmlFor={id}>{label}</label>
-                <div className="up-input-wrap">
-                  <span className="up-input-icon"><IconLock /></span>
-                  <input
-                    id={id} name={id}
-                    type={showPw[id] ? "text" : "password"}
-                    className="up-input up-input--pw"
-                    placeholder={placeholder}
-                    value={passwords[id]}
-                    onChange={onPwChange}
-                    autoComplete="off"
-                  />
-                  <button
-                    type="button"
-                    className="up-pw-toggle"
-                    onClick={() => togglePw(id)}
-                    aria-label={showPw[id] ? "Hide password" : "Show password"}
-                  >
-                    {showPw[id] ? <IconEyeOff /> : <IconEye />}
-                  </button>
-                </div>
-              </div>
-            ))}
-
+          <div className="up-field">
+            <label className="up-label" htmlFor="email">Email Address</label>
+            <div className="up-input-wrap">
+              <span className="up-input-icon"><IconMail /></span>
+              <input
+                id="email" name="email" type="email"
+                className="up-input" placeholder="you@example.com"
+                style={{ width: "100%" }}
+                value={profile.email} onChange={onProfileChange}
+              />
+            </div>
           </div>
 
-          <div className="up-form-footer">
-            <button type="submit" className="up-save-btn" disabled={pwSaving}>
-              {pwSaving ? <span className="up-btn-spinner" /> : <IconLock />}
-              {pwSaving ? "Updating…" : "Update password"}
-            </button>
+          <div className="up-field">
+            <label className="up-label" htmlFor="phone">Phone Number</label>
+            <div className="up-input-wrap">
+              <span className="up-input-icon"><IconPhone /></span>
+              <input
+                id="phone" name="phone" type="tel"
+                className="up-input" placeholder="+91 98765 43210"
+                style={{ width: "100%" }}
+                value={profile.phone} onChange={onProfileChange}
+              />
+            </div>
           </div>
-        </form>
-      )}
+
+          <div className="up-field up-field--full">
+            <label className="up-label" htmlFor="address">Delivery Address</label>
+            <div className="up-input-wrap">
+              <span className="up-input-icon up-input-icon--top"><IconMapPin /></span>
+              <textarea
+                id="address" name="address"
+                className="up-input up-textarea" placeholder="Street, City, State, PIN"
+                style={{ width: "100%", resize: "vertical" }}
+                rows={3} value={profile.address} onChange={onProfileChange}
+              />
+            </div>
+          </div>
+
+        </div>
+
+        <div className="up-form-footer">
+          <button type="submit" className="up-save-btn" disabled={saving}>
+            {saving ? <span className="up-btn-spinner" /> : <IconSave />}
+            {saving ? "Saving…" : "Save changes"}
+          </button>
+        </div>
+      </form>
 
     </div>
   );
+
 };
 
 export default Userprofile;
