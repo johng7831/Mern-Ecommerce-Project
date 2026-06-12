@@ -9,8 +9,8 @@ import { CartContext } from "../../context/CartContext";
 import "../../user.css";
 
 const Header = () => {
-  const { user, logout } = useContext(AuthContext);
-  const { cartItems = [] } = useContext(CartContext); // safe default
+  const { user } = useContext(AuthContext);
+  const { cartItems = [] } = useContext(CartContext);
 
   const [collections, setCollections] = useState([]);
 
@@ -41,17 +41,11 @@ const Header = () => {
     };
 
     fetchCollections();
-  }, [API_URL]);
-
-  const handleLogout = () => {
-    logout();
-    navigate("/");
-  };
+  }, []);
 
   return (
     <header className="header">
       <div className="header-container">
-
         {/* LOGO */}
         <Link to="/" className="logo">
           ShopEasy
@@ -71,27 +65,24 @@ const Header = () => {
               ))}
             </nav>
 
-            {/* AUTH */}
+            {/* USER ICON */}
             <div className="auth">
-              {user ? (
-                <>
-                  <span className="username">Hi, {user.name}</span>
-                  <button onClick={handleLogout} className="logout-btn">
-                    Logout
-                  </button>
-                </>
-              ) : (
-                <Link to="/login" className="login-link">
-                  <FaRegUser className="nav-icon" />
-                </Link>
-              )}
+              <Link
+                to={user ? "/user" : "/login"}
+                className="login-link"
+                aria-label="User Account"
+              >
+                <FaRegUser className="nav-icon" />
+              </Link>
             </div>
 
             {/* CART */}
             <Link
               to="/cart"
               className="cart-link"
-              aria-label={`Shopping cart${cartCount ? `, ${cartCount} items` : ", empty"}`}
+              aria-label={`Shopping cart${
+                cartCount ? `, ${cartCount} items` : ", empty"
+              }`}
             >
               <span className="cart-wrapper">
                 <FaShoppingCart
@@ -107,7 +98,6 @@ const Header = () => {
             </Link>
           </>
         )}
-
       </div>
     </header>
   );

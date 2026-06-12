@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import API_URL from "../../api";
-import "../../user.css";
+
 
 const BrandProducts = () => {
   const { brandId } = useParams();

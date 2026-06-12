@@ -17,15 +17,11 @@ const BrandShow = ({ onAdd, onEdit }) => {
           Authorization: `Bearer ${token}`,
         },
       });
-
       const result = await response.json();
-
       if (!response.ok) {
         throw new Error(result.message || "Failed to fetch brands");
       }
-
       console.log("Brands API Response:", result);
-
       setBrands(result.data || []);
     } catch (error) {
       console.error("Fetch Brand Error:", error);
@@ -34,15 +30,12 @@ const BrandShow = ({ onAdd, onEdit }) => {
       setLoading(false);
     }
   };
-
   // ================= DELETE BRAND =================
   const handleDelete = async (id) => {
     const confirmDelete = window.confirm(
       "Are you sure you want to delete this brand?"
     );
-
     if (!confirmDelete) return;
-
     try {
       const token = localStorage.getItem("token");
 
@@ -52,15 +45,11 @@ const BrandShow = ({ onAdd, onEdit }) => {
           Authorization: `Bearer ${token}`,
         },
       });
-
       const result = await response.json();
-
       if (!response.ok) {
         throw new Error(result.message || "Delete failed");
       }
-
       alert("Brand deleted successfully");
-
       fetchBrands();
     } catch (error) {
       console.error("Delete Error:", error);
@@ -72,21 +61,17 @@ const BrandShow = ({ onAdd, onEdit }) => {
   useEffect(() => {
     fetchBrands();
   }, []);
-
   return (
     <div>
       <h2 className="greeting">Brand Management</h2>
-
       <div className="page-content-card">
         {/* Header */}
         <div className="card-header">
           <h3>All Brands</h3>
-
           <button className="btn-primary" onClick={onAdd}>
             + Add Brand
           </button>
         </div>
-
         {/* Table */}
         <div className="table-container">
           {loading ? (
@@ -102,7 +87,6 @@ const BrandShow = ({ onAdd, onEdit }) => {
                   <th>Actions</th>
                 </tr>
               </thead>
-
               <tbody>
                 {brands.length > 0 ? (
                   brands.map((brand) => (
@@ -125,13 +109,10 @@ const BrandShow = ({ onAdd, onEdit }) => {
                           "No Image"
                         )}
                       </td>
-
                       {/* Name */}
                       <td>{brand.name}</td>
-
                       {/* Description */}
                       <td>{brand.description || "-"}</td>
-
                       {/* Status */}
                       <td>
                         {brand.isActive ? (
@@ -140,7 +121,6 @@ const BrandShow = ({ onAdd, onEdit }) => {
                           <span style={{ color: "red" }}>Inactive</span>
                         )}
                       </td>
-
                       {/* Actions */}
                       <td>
                         <button
@@ -149,7 +129,6 @@ const BrandShow = ({ onAdd, onEdit }) => {
                         >
                           Edit
                         </button>
-
                         <button
                           className="btn-delete"
                           onClick={() => handleDelete(brand._id)}
