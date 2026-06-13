@@ -55,7 +55,7 @@ const CollectionPage = () => {
   const fetchProducts = async () => {
     try {
       const res = await axios.get(
-        `${API_URL}/admin/products`,
+        `${API_URL}/products`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

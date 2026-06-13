@@ -34,27 +34,33 @@ const CategoryShow = ({ onAdd, onEdit }) => {
     fetchCategories();
   }, []);
 
+
+
   // =========================================
-  // DELETE CATEGORY (⚠️ should still be admin)
+  // DELETE CATEGORY 
   // =========================================
-  const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure?")) return;
-
-    try {
-      const res = await fetch(`${API_URL}/category/${id}`, {
-        method: "DELETE",
-      });
-
-      if (!res.ok) {
-        throw new Error("Failed to delete");
-      }
-
-      // refresh list
-      fetchCategories();
-    } catch (error) {
-      alert(error.message || "Delete failed");
+ const handleDelete = async (id) => {
+  if (!window.confirm("Are you sure?")) return;
+  try {
+    const token = localStorage.getItem("token");
+    const res = await fetch(`${API_URL}/admin/category/${id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(data.message);
     }
-  };
+
+    alert("Category deleted successfully");
+    fetchCategories();
+  } catch (error) {
+    alert(error.message);
+  }
+};
 
   return (
     <>

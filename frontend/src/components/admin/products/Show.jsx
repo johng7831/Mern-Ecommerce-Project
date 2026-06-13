@@ -26,28 +26,35 @@ const ProductShow = ({ onAdd, onEdit }) => {
       setLoading(false);
     }
   };
-
-  // =========================================
-  // DELETE PRODUCT (⚠️ still admin operation)
-  // =========================================
-  const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this product?"))
-      return;
-
-    try {
-      const res = await fetch(`${API_URL}/product/${id}`, {
-        method: "DELETE",
-      });
-
-      if (res.ok) {
-        setProducts(products.filter((p) => p._id !== id));
-      } else {
-        alert("Failed to delete product");
-      }
-    } catch (error) {
-      console.error("Error deleting product", error);
+// =========================================
+// DELETE PRODUCT (Admin Only)
+// =========================================
+const handleDelete = async (id) => {
+  const confirmDelete = window.confirm(
+    "Are you sure you want to delete this product?"
+  );
+  if (!confirmDelete) return;
+  try {
+    const token = localStorage.getItem("token");
+    const res = await fetch(`${API_URL}/admin/product/${id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(data.message || "Failed to delete product");
     }
-  };
+    setProducts((prevProducts) =>
+      prevProducts.filter((p) => p._id !== id)
+    );
+    alert("Product deleted successfully");
+  } catch (error) {
+    console.error("Error deleting product:", error);
+    alert(error.message);
+  }
+ };
 
   useEffect(() => {
     fetchProducts();

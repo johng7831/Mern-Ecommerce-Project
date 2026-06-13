@@ -32,36 +32,49 @@ const CollectionShow = ({ onBack, onAdd, onEdit }) => {
     }
   };
 
-  // =========================
-  // DELETE COLLECTION (NO AUTH)
-  // =========================
-  const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this collection?")) {
-      return;
-    }
+ // =========================
+// DELETE COLLECTION
+// =========================
+const handleDelete = async (id) => {
+  if (!window.confirm("Are you sure you want to delete this collection?")) {
+    return;
+  }
 
-    try {
-      const res = await fetch(`${API_URL}/collection/${id}`, {
+  try {
+    const token = localStorage.getItem("token");
+
+    const res = await fetch(
+      `${API_URL}/admin/collection/${id}`,
+      {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.message || "Failed to delete collection");
       }
+    );
 
-      alert("Collection deleted successfully");
+    const data = await res.json();
 
-      // refresh list after delete
-      fetchCollections();
-    } catch (error) {
-      alert(error.message || "Error deleting collection");
+    if (!res.ok) {
+      throw new Error(
+        data.message || "Failed to delete collection"
+      );
     }
-  };
+
+    alert("Collection deleted successfully");
+
+    // Refresh collections
+    fetchCollections();
+
+  } catch (error) {
+    console.error("Delete Error:", error);
+    alert(error.message || "Error deleting collection");
+  }
+};
+
+
+
 
   // =========================
   // LOAD DATA
