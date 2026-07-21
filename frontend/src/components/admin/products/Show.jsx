@@ -26,35 +26,39 @@ const ProductShow = ({ onAdd, onEdit }) => {
       setLoading(false);
     }
   };
-// =========================================
-// DELETE PRODUCT (Admin Only)
-// =========================================
-const handleDelete = async (id) => {
-  const confirmDelete = window.confirm(
-    "Are you sure you want to delete this product?"
-  );
-  if (!confirmDelete) return;
-  try {
-    const token = localStorage.getItem("token");
-    const res = await fetch(`${API_URL}/admin/product/${id}`, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    const data = await res.json();
-    if (!res.ok) {
-      throw new Error(data.message || "Failed to delete product");
-    }
-    setProducts((prevProducts) =>
-      prevProducts.filter((p) => p._id !== id)
+
+  // =========================================
+  // DELETE PRODUCT (Admin Only)
+  // =========================================
+  const handleDelete = async (id) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this product?"
     );
-    alert("Product deleted successfully");
-  } catch (error) {
-    console.error("Error deleting product:", error);
-    alert(error.message);
-  }
- };
+    if (!confirmDelete) return;
+
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`${API_URL}/admin/product/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || "Failed to delete product");
+      }
+
+      setProducts((prevProducts) =>
+        prevProducts.filter((p) => p._id !== id)
+      );
+      alert("Product deleted successfully");
+    } catch (error) {
+      console.error("Error deleting product:", error);
+      alert(error.message);
+    }
+  };
 
   useEffect(() => {
     fetchProducts();
@@ -85,6 +89,7 @@ const handleDelete = async (id) => {
                   <th>Brand</th>
                   <th>Price</th>
                   <th>Stock</th>
+                  <th>Variants</th>
                   <th>Type</th>
                   <th>Actions</th>
                 </tr>
@@ -128,6 +133,36 @@ const handleDelete = async (id) => {
                         <td>₹{Number(product.price || 0).toLocaleString()}</td>
                         <td>{product.stock}</td>
 
+                        {/* VARIANTS COLUMN */}
+                        <td>
+                          {product.variants && product.variants.length > 0 ? (
+                            <div
+                              style={{
+                                display: "flex",
+                                flexDirection: "column",
+                                gap: "4px",
+                                fontSize: "12px",
+                              }}
+                            >
+                              {product.variants.map((v, i) => (
+                                <div
+                                  key={v._id || i}
+                                  style={{
+                                    backgroundColor: "#f0f0f0",
+                                    padding: "4px 8px",
+                                    borderRadius: "4px",
+                                    whiteSpace: "nowrap",
+                                  }}
+                                >
+                                  <strong>{v.size}</strong> / {v.color} — ₹{v.price} ({v.stock} in stock)
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            "—"
+                          )}
+                        </td>
+
                         <td>
                           {type === "featured"
                             ? "Featured"
@@ -156,7 +191,7 @@ const handleDelete = async (id) => {
                   })
                 ) : (
                   <tr>
-                    <td colSpan="8" style={{ textAlign: "center" }}>
+                    <td colSpan="9" style={{ textAlign: "center" }}>
                       No products available. Click "Add Product" to get
                       started.
                     </td>

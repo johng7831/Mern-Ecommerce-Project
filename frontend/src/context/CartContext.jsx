@@ -1,44 +1,95 @@
-import React, { createContext, useState } from "react";
+import React, { createContext, useState, useEffect } from "react";
 
 export const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
-  const [cartItems, setCartItems] = useState([]);
+  // 1. Lazy initialize state from localStorage so it survives page reloads
+  const [cartItems, setCartItems] = useState(() => {
+    try {
+      const savedCart = localStorage.getItem("shopping_cart");
+      return savedCart ? JSON.parse(savedCart) : [];
+    } catch (error) {
+      console.error("Failed to load cart from localStorage:", error);
+      return [];
+    }
+  });
 
-  // Add product once per line item; change quantity on the cart page
+  // 2. Automatically sync to localStorage whenever cartItems updates
+  useEffect(() => {
+    try {
+      localStorage.setItem("shopping_cart", JSON.stringify(cartItems));
+    } catch (error) {
+      console.error("Failed to save cart to localStorage:", error);
+    }
+  }, [cartItems]);
+
+  // Add product to cart (or update quantity if variant already exists)
   const addToCart = (product) => {
-    setCartItems((prev) => {
-      if (prev.some((item) => item._id === product._id)) {
-        return prev;
+    setCartItems((prevItems) => {
+      // Determine unique ID based on cartItemId or fallback combinations
+      const targetId =
+        product.cartItemId ||
+        `${product._id}-${product.selectedSize || ""}-${product.selectedColor || ""}`;
+
+      const existingIndex = prevItems.findIndex((item) => {
+        const itemId =
+          item.cartItemId ||
+          `${item._id}-${item.selectedSize || ""}-${item.selectedColor || ""}`;
+        return itemId === targetId;
+      });
+
+      if (existingIndex > -1) {
+        const updatedItems = [...prevItems];
+        const currentQty = updatedItems[existingIndex].quantity || 1;
+        const addQty = product.quantity || 1;
+        
+        updatedItems[existingIndex] = {
+          ...updatedItems[existingIndex],
+          quantity: currentQty + addQty,
+        };
+        return updatedItems;
       }
-      return [...prev, { ...product, quantity: 1 }];
+
+      return [...prevItems, { ...product, cartItemId: targetId, quantity: product.quantity || 1 }];
     });
   };
 
-  const setItemQuantity = (productId, quantity) => {
-    setCartItems((prev) =>
-      prev.map((item) => {
-        if (item._id !== productId) return item;
-        const max = typeof item.stock === "number" ? item.stock : 999;
-        const next = Math.min(Math.max(1, quantity), Math.max(1, max));
-        return { ...item, quantity: next };
+  // Update item quantity directly
+  const setItemQuantity = (identifier, quantity) => {
+    if (quantity < 1) return;
+
+    setCartItems((prevItems) =>
+      prevItems.map((item) => {
+        const key = item.cartItemId || item._id;
+        if (key === identifier) {
+          return { ...item, quantity };
+        }
+        return item;
       })
     );
   };
 
-  // Remove product from cart
-  const removeFromCart = (productId) => {
-    setCartItems((prev) => prev.filter((item) => item._id !== productId));
+  // Remove item from cart
+  const removeFromCart = (identifier) => {
+    setCartItems((prevItems) =>
+      prevItems.filter((item) => (item.cartItemId || item._id) !== identifier)
+    );
   };
 
-  // Clear entire cart
+  // Clear entire cart (useful for post-checkout)
   const clearCart = () => {
     setCartItems([]);
   };
 
   return (
     <CartContext.Provider
-      value={{ cartItems, addToCart, setItemQuantity, removeFromCart, clearCart }}
+      value={{
+        cartItems,
+        addToCart,
+        setItemQuantity,
+        removeFromCart,
+        clearCart,
+      }}
     >
       {children}
     </CartContext.Provider>

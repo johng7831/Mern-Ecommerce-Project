@@ -1,5 +1,35 @@
 const mongoose = require("mongoose");
 
+const variantSchema = new mongoose.Schema({
+  size: {
+    type: String,
+    required: true
+  },
+
+  color: {
+    type: String,
+    required: true
+  },
+
+  price: {
+    type: Number,
+    required: true
+  },
+
+  stock: {
+    type: Number,
+    default: 0
+  },
+
+  images: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Image"
+    }
+  ]
+});
+
+
 const productSchema = new mongoose.Schema(
   {
     name: { 
@@ -12,6 +42,7 @@ const productSchema = new mongoose.Schema(
       type: String 
     },
 
+    // Default price (optional)
     price: { 
       type: Number, 
       required: true 
@@ -32,18 +63,26 @@ const productSchema = new mongoose.Schema(
         type: mongoose.Schema.Types.ObjectId, 
         ref: "Image" 
       }
-    ], 
+    ],
+
+
+    // Product Variants
+    variants: [
+      variantSchema
+    ],
+
 
     stock: { 
       type: Number, 
       default: 0 
     },
 
-    // Product type: featured / new 
+
     productType: {
       type: String,
-      enum: ["featured", "new",],
+      enum: ["featured", "new"],
     },
+
 
     isFeatured: { 
       type: Boolean, 
@@ -54,10 +93,12 @@ const productSchema = new mongoose.Schema(
       type: Boolean, 
       default: true 
     },
+
   },
   { 
     timestamps: true 
   }
 );
+
 
 module.exports = mongoose.model("Product", productSchema);

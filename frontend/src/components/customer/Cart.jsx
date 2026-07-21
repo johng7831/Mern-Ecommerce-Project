@@ -8,10 +8,11 @@ const Cart = () => {
 
   const totals = useMemo(() => {
     const subtotal = cartItems.reduce(
-      (sum, item) => sum + item.price * (item.quantity || 1),
+      (sum, item) => sum + (item.price || 0) * (item.quantity || 1),
       0
     );
-    return { subtotal, count: cartItems.reduce((n, i) => n + (i.quantity || 1), 0) };
+    const count = cartItems.reduce((n, item) => n + (item.quantity || 1), 0);
+    return { subtotal, count };
   }, [cartItems]);
 
   if (cartItems.length === 0) {
@@ -39,18 +40,31 @@ const Cart = () => {
         <div className="cart-layout">
           <div className="cart-main">
             <ul className="cart-list">
-              {cartItems.map((item) => {
+              {cartItems.map((item, index) => {
                 const qty = item.quantity || 1;
+
+                // Determine stock limit
+                const availableStock = item.selectedVariant?.stock ?? item.stock;
                 const maxStock =
-                  typeof item.stock === "number" ? Math.max(1, item.stock) : 999;
+                  typeof availableStock === "number" ? Math.max(1, availableStock) : 999;
+
                 const imageUrl = item.images?.[0]?.url;
 
+                // Extract variant info
+                const variantSize = item.selectedVariant?.size || item.selectedSize;
+                const variantColor = item.selectedVariant?.color || item.selectedColor;
+
+                // Unique identifier used for actions & list key
+                const identifier =
+                  item.cartItemId ||
+                  `${item._id}-${variantSize || ""}-${variantColor || ""}-${index}`;
+
                 return (
-                  <li key={item._id} className="cart-row">
+                  <li key={identifier} className="cart-row">
                     <Link to={`/product/${item._id}`} className="cart-row-image-link">
                       <div className="cart-row-image-wrap">
                         {imageUrl ? (
-                          <img src={imageUrl} alt="" className="cart-row-image" />
+                          <img src={imageUrl} alt={item.name} className="cart-row-image" />
                         ) : (
                           <span className="cart-row-no-image">No image</span>
                         )}
@@ -61,17 +75,59 @@ const Cart = () => {
                       <Link to={`/product/${item._id}`} className="cart-row-name">
                         {item.name}
                       </Link>
+
                       <p className="cart-row-brand">
                         {displayBrandName(item.brand) ?? "No brand"}
                       </p>
+
+                      {/* Variant Details (Size & Color) */}
+                      {(variantSize || variantColor) && (
+                        <div
+                          className="cart-row-variant-info"
+                          style={{
+                            display: "flex",
+                            gap: "8px",
+                            margin: "4px 0 8px 0",
+                            fontSize: "13px",
+                            color: "#555",
+                          }}
+                        >
+                          {variantSize && (
+                            <span
+                              style={{
+                                background: "#f1f1f1",
+                                padding: "2px 8px",
+                                borderRadius: "4px",
+                                border: "1px solid #ddd",
+                              }}
+                            >
+                              <strong>Size:</strong> {variantSize}
+                            </span>
+                          )}
+                          {variantColor && (
+                            <span
+                              style={{
+                                background: "#f1f1f1",
+                                padding: "2px 8px",
+                                borderRadius: "4px",
+                                border: "1px solid #ddd",
+                              }}
+                            >
+                              <strong>Color:</strong> {variantColor}
+                            </span>
+                          )}
+                        </div>
+                      )}
+
                       <p className="cart-row-price">₹ {item.price} each</p>
+
                       <div className="cart-row-qty">
                         <button
                           type="button"
                           className="cart-qty-btn"
                           aria-label="Decrease quantity"
                           disabled={qty <= 1}
-                          onClick={() => setItemQuantity(item._id, qty - 1)}
+                          onClick={() => setItemQuantity(identifier, qty - 1)}
                         >
                           −
                         </button>
@@ -81,7 +137,7 @@ const Cart = () => {
                           className="cart-qty-btn"
                           aria-label="Increase quantity"
                           disabled={qty >= maxStock}
-                          onClick={() => setItemQuantity(item._id, qty + 1)}
+                          onClick={() => setItemQuantity(identifier, qty + 1)}
                         >
                           +
                         </button>
@@ -89,11 +145,13 @@ const Cart = () => {
                     </div>
 
                     <div className="cart-row-right">
-                      <p className="cart-row-line-total">₹ {(item.price * qty).toFixed(0)}</p>
+                      <p className="cart-row-line-total">
+                        ₹ {((item.price || 0) * qty).toFixed(0)}
+                      </p>
                       <button
                         type="button"
                         className="cart-remove-btn"
-                        onClick={() => removeFromCart(item._id)}
+                        onClick={() => removeFromCart(identifier)}
                       >
                         Remove
                       </button>
