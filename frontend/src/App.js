@@ -23,6 +23,7 @@ import Collections from "./components/customer/Collections";
 import CollectionProducts from "./components/customer/CollectionProducts";
 import Brands from "./components/customer/Brands";
 import BrandProducts from "./components/customer/BrandProducts";
+import SearchResults from "./components/customer/SearchResults";
 
 function App() {
   return (
@@ -71,6 +72,9 @@ function App() {
             path="/shop-product"
             element={<Shopproduct />}
           />
+
+          {/* Search */}
+          <Route path="/search" element={<SearchResults />} />
 
           {/* Checkout */}
           <Route

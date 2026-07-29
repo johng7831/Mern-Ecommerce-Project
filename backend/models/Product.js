@@ -3,102 +3,94 @@ const mongoose = require("mongoose");
 const variantSchema = new mongoose.Schema({
   size: {
     type: String,
-    required: true
+    required: true,
   },
 
   color: {
     type: String,
-    required: true
+    required: true,
   },
 
   price: {
     type: Number,
-    required: true
+    required: true,
   },
 
   stock: {
     type: Number,
-    default: 0
+    default: 0,
   },
 
   images: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Image"
-    }
-  ]
+      ref: "Image",
+    },
+  ],
 });
-
 
 const productSchema = new mongoose.Schema(
   {
-    name: { 
-      type: String, 
+    name: {
+      type: String,
       required: true,
-      trim: true 
+      trim: true,
     },
 
-    description: { 
-      type: String 
+    description: {
+      type: String,
     },
 
-    // Default price (optional)
-    price: { 
-      type: Number, 
-      required: true 
+    price: {
+      type: Number,
+      required: true,
     },
 
-    category: { 
-      type: mongoose.Schema.Types.ObjectId, 
-      ref: "Category" 
+    category: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
     },
 
-    brand: { 
-      type: mongoose.Schema.Types.ObjectId, 
-      ref: "Brand" 
+    brand: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Brand",
     },
 
     images: [
-      { 
-        type: mongoose.Schema.Types.ObjectId, 
-        ref: "Image" 
-      }
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Image",
+      },
     ],
 
+    variants: [variantSchema],
 
-    // Product Variants
-    variants: [
-      variantSchema
-    ],
-
-
-    stock: { 
-      type: Number, 
-      default: 0 
+    stock: {
+      type: Number,
+      default: 0,
     },
-
 
     productType: {
       type: String,
       enum: ["featured", "new"],
     },
 
-
-    isFeatured: { 
-      type: Boolean, 
-      default: false 
+    isFeatured: {
+      type: Boolean,
+      default: false,
     },
 
-    isActive: { 
-      type: Boolean, 
-      default: true 
+    isActive: {
+      type: Boolean,
+      default: true,
     },
-
   },
-  { 
-    timestamps: true 
+  {
+    timestamps: true,
   }
 );
 
+// (Optional) Add Text Index for faster full-text searches as your catalog grows
+productSchema.index({ name: "text", description: "text" });
 
 module.exports = mongoose.model("Product", productSchema);

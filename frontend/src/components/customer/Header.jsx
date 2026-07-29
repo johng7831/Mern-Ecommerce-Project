@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { FaShoppingCart, FaRegUser } from "react-icons/fa";
+import { FaShoppingCart, FaRegUser, FaSearch } from "react-icons/fa";
 import axios from "axios";
 import API_URL from "../../api";
 
@@ -13,6 +13,7 @@ const Header = () => {
   const { cartItems = [] } = useContext(CartContext);
 
   const [collections, setCollections] = useState([]);
+  const [searchQuery, setSearchQuery] = useState(""); // Search state
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -43,6 +44,22 @@ const Header = () => {
     fetchCollections();
   }, []);
 
+  // Sync header search with URL on search page
+  useEffect(() => {
+    if (location.pathname === "/search") {
+      const params = new URLSearchParams(location.search);
+      setSearchQuery(params.get("query") || "");
+    }
+  }, [location.pathname, location.search]);
+
+  // HANDLE SEARCH SUBMIT
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/search?query=${encodeURIComponent(searchQuery.trim())}`);
+    }
+  };
+
   return (
     <header className="header">
       <div className="header-container">
@@ -64,6 +81,22 @@ const Header = () => {
                 </Link>
               ))}
             </nav>
+
+            {/* SEARCH BAR */}
+            <form onSubmit={handleSearchSubmit} className="search-form">
+              <FaSearch className="search-form-icon" aria-hidden="true" />
+              <input
+                type="search"
+                placeholder="Search products..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="search-input"
+                aria-label="Search products"
+              />
+              <button type="submit" className="search-btn" aria-label="Search">
+                Search
+              </button>
+            </form>
 
             {/* USER ICON */}
             <div className="auth">
