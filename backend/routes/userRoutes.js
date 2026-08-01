@@ -14,12 +14,25 @@ const {
   searchProducts,
 } = require("../controllers/productController");
 
-const { getCategories } = require("../controllers/categoryController");
+const {
+   getCategories 
+  } = require("../controllers/categoryController");
+
 const { 
   getAllCollections, 
   getCollectionById 
 } = require("../controllers/collectionController");
-const { getBrands, getBrandById } = require("../controllers/brandController");
+
+const { 
+  getBrands, 
+  getBrandById 
+} = require("../controllers/brandController");
+
+const { 
+  Aichatbot, 
+} = require("../controllers/AichatController");
+
+
 
 // Auth Routes
 router.post("/register", registerUser);
@@ -45,5 +58,9 @@ router.get("/collection/:id", getCollectionById);
 // Public Brand Routes
 router.get("/brands", getBrands);
 router.get("/brand/:id", getBrandById);
+
+
+// Ai Chatbots Routes
+router.post("/aichatbot", Aichatbot);
 
 module.exports = router;

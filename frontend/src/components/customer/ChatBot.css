@@ -1,0 +1,133 @@
+/* ChatBot Container & Button */
+.chat-btn {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: #000;
+  color: #fff;
+  border: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  font-size: 24px;
+  cursor: pointer;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.chat-btn:hover {
+  transform: scale(1.1);
+  background-color: #333;
+}
+
+/* Chat Box */
+.chat-box {
+  position: fixed;
+  bottom: 100px;
+  right: 30px;
+  width: 350px;
+  height: 450px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 9999;
+  border: 1px solid #e0e0e0;
+  animation: slideUp 0.3s ease forwards;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.chat-header {
+  background-color: #000;
+  color: #fff;
+  padding: 16px;
+  font-weight: 600;
+  font-size: 16px;
+  text-align: center;
+  border-bottom: 1px solid #222;
+}
+
+.chat-body {
+  flex: 1;
+  padding: 16px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background-color: #f9f9f9;
+}
+
+.chat-body .bot {
+  background-color: #e5e5ea;
+  color: #000;
+  padding: 10px 14px;
+  border-radius: 18px 18px 18px 4px;
+  align-self: flex-start;
+  max-width: 80%;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.chat-body .user {
+  background-color: #000;
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 18px 18px 4px 18px;
+  align-self: flex-end;
+  max-width: 80%;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.chat-footer {
+  padding: 12px;
+  background: #fff;
+  border-top: 1px solid #eee;
+  display: flex;
+  gap: 8px;
+}
+
+.chat-footer input {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  outline: none;
+  font-size: 14px;
+  transition: border-color 0.2s;
+}
+
+.chat-footer input:focus {
+  border-color: #000;
+}
+
+.chat-footer button {
+  background-color: #000;
+  color: #fff;
+  border: none;
+  padding: 0 16px;
+  border-radius: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.chat-footer button:hover {
+  background-color: #333;
+}

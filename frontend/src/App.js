@@ -24,6 +24,7 @@ import CollectionProducts from "./components/customer/CollectionProducts";
 import Brands from "./components/customer/Brands";
 import BrandProducts from "./components/customer/BrandProducts";
 import SearchResults from "./components/customer/SearchResults";
+import ChatBot from "./components/customer/ChatBot";
 
 function App() {
   return (
@@ -116,6 +117,7 @@ function App() {
         </Routes>
 
         <Footer />
+        <ChatBot />
       </Router>
     </AuthProvider>
   );
